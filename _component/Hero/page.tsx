@@ -8,7 +8,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
+import {  useSelector } from "react-redux";
+import type { RootState} from "@/store/store";
+
 const page = () => {
+
+  const categories = useSelector((state: RootState) => state.categories.data);
+const firstCategoryId = categories?.[0]?.id;
 
   return (
 
@@ -53,7 +59,7 @@ const page = () => {
                   <br />
                   طلبات الاونلاين
                 </h1>
-                <Link href="/menu">
+                <Link href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}>
                 <button
                   className="bg-(--bg-color) text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
                   >
@@ -90,7 +96,7 @@ const page = () => {
                   <br />
                   طلبات الاونلاين
                 </h1>
-                <Link href="/menu">
+                <Link href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}>
                 <button
                   className="bg-(--bg-color) text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
                   >

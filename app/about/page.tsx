@@ -47,7 +47,7 @@ const page = () => {
             <div className=" max-w-full  pt-15 pr-3.75 pb-10  pl-3.75 lg:pl-10">
               <div className=" pl-10">
                 <p className="font-bold text-4xl leading-6 tracking-[-0.1px] align-middle text-[#202435]">
-                  فريقنا
+                  فريقنا هو سر نجاحنا
                 </p>
               </div>
               <div className=" gap-4 pt-3.75">

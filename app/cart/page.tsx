@@ -3,9 +3,13 @@ import CartItem from "@/_component/CartItem/page";
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import Link from 'next/link';
+import type { RootState} from "@/store/store";
 
 const Page = () => {
   const items = useSelector((state : any) => state.cart.products);
+
+   const categories = useSelector((state: RootState) => state.categories.data);
+  const firstCategoryId = categories?.[0]?.id;
 
   const totalPrice = useMemo(() => {
     let totalNumbers = 0;
@@ -21,7 +25,7 @@ const Page = () => {
         <div className="py-40 text-mainColor text-center h-[85vh]">
           <h1 className="text-2xl sm:text-3xl text-black mb-8">الكارت فاضي </h1>
           <Link
-                href="menu"
+                href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}
                 className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer"
               >
                 ابدا الطلب
@@ -50,7 +54,7 @@ className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transiti
                تاكيد الطلب
               </Link>
               <Link
-                href="menu"
+                href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}
                 className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer"
               >
                 ارجع للمنيو

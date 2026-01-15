@@ -1,18 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define the product type
 interface Product {
   id: number;
   image: string;
   name: string;
   price: number;
-  size?: string;
+  box_size?: number;
+}
+
+interface BoxItems {
+  kofta: number;
+  shish: number;
+  hawawshi: number;
 }
 
 interface CartItem {
   product: Product;
-  count: number;
+  count: number;        // عدد العناصر في الكارت
   totalPrice: number;
+  details?: BoxItems;   // موجودة بس في حالة البوكس
 }
 
 interface CartState {
@@ -27,23 +33,51 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    // ✅ Fix: Expect payload shape to be { product, quantity }
-    addCart: (state, action: PayloadAction<{ product: Product; quantity?: number }>) => {
-      const { product, quantity = 1 } = action.payload;
+    addCart: (
+      state,
+      action: PayloadAction<{ product: Product; quantity: number | BoxItems }>
+    ) => {
+      const { product, quantity } = action.payload;
 
-      const existingItem = state.products.find(
-        (item) => item.product.id === product.id
-      );
+      const isBox = typeof quantity === "object"; // بوكس ولا ساندويتش فردي
 
-      if (existingItem) {
-        existingItem.count += quantity;
-        existingItem.totalPrice += product.price * quantity;
+      if (isBox) {
+        // البوكس يتعامل كعنصر واحد
+        const existingBox = state.products.find(
+          (item) =>
+            item.product.id === product.id &&
+            JSON.stringify(item.details) === JSON.stringify(quantity)
+        );
+
+        if (existingBox) {
+          existingBox.count += 1; // زود عدد البوكسات بمقدار 1
+          existingBox.totalPrice += product.price; // سعر بوكس واحد
+        } else {
+          state.products.push({
+            product,
+            count: 1,
+            totalPrice: product.price,
+            details: quantity,
+          });
+        }
       } else {
-        state.products.push({
-          product,
-          count: quantity,
-          totalPrice: product.price * quantity,
-        });
+        // ساندويتش فردي
+        const existingItem = state.products.find(
+          (item) =>
+            item.product.id === product.id &&
+            !item.details // مش بوكس
+        );
+
+        if (existingItem) {
+          existingItem.count += quantity;
+          existingItem.totalPrice += product.price * quantity;
+        } else {
+          state.products.push({
+            product,
+            count: quantity,
+            totalPrice: product.price * quantity,
+          });
+        }
       }
     },
 
@@ -66,8 +100,6 @@ const cartSlice = createSlice({
       if (item && item.count > 1) {
         item.count -= 1;
         item.totalPrice -= action.payload.price;
-      } else if (item) {
-        console.warn("Cannot decrease count below 1.");
       }
     },
 
@@ -83,5 +115,6 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addCart, removeItem, increase, decrease, cleanUpCart } = cartSlice.actions;
+export const { addCart, removeItem, increase, decrease, cleanUpCart } =
+  cartSlice.actions;
 export default cartSlice.reducer;

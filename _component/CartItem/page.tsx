@@ -19,7 +19,14 @@ export default function page({ data }: { data: any }) {
           alt={data.product.name}
           className="w-16 h-16 object-cover rounded"
         />
+        <div className="flex-col ">
         <p className="text-gray-800 font-medium">{data.product.name}</p>
+        <ul className=" text-gray-600 flex gap-4">
+  {data.details.kofta > 0 && <li>{data.details.kofta} كفته</li>}
+  {data.details.shish > 0 && <li> {data.details.shish} شيش</li>}
+  {data.details.hawawshi > 0 && <li>{data.details.hawawshi} حواوشي</li>}
+</ul>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 w-full sm:w-1/4 justify-center">

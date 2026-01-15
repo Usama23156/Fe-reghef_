@@ -8,7 +8,8 @@ interface Product {
   id: number;
   image: string;
   name: string;
-  price: number; 
+  price: number;
+  box_size?: number; // 1, 4, 8, 10
 }
 
 interface ModalProps {
@@ -17,17 +18,31 @@ interface ModalProps {
   product: Product | null;
 }
 
+interface BoxItems {
+  kofta: number;
+  shish: number;
+  hawawshi: number;
+}
+
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
   if (!isOpen || !product) return null;
 
   const dispatch = useDispatch();
-  const cartItems = useSelector((state: any) => state.cart.products); 
+  const cartItems = useSelector((state: any) => state.cart.products);
   const [quantity, setQuantity] = useState<number>(0);
 
-  // ✅ Reset quantity when modal opens or product changes
+  const [boxItems, setBoxItems] = useState<BoxItems>({
+    kofta: 0,
+    shish: 0,
+    hawawshi: 0,
+  });
+
+  type BoxItemKey = keyof BoxItems;
+
   useEffect(() => {
     if (isOpen && product) {
       setQuantity(0);
+      setBoxItems({ kofta: 0, shish: 0, hawawshi: 0 });
     }
   }, [isOpen, product]);
 
@@ -35,26 +50,38 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
     (item: any) => item.product.id === product.id
   );
 
-  // ✅ Send correct structure to addCart
-  const addToCart = () => {
-    if (quantity > 0) {
-      dispatch(addCart({
-  product,
-  quantity,
-}));
-      setQuantity(0); 
-      onClose(); 
-    } else {
-      console.error('Quantity must be greater than 0');
-    }
-  };
+  const totalBox = boxItems.kofta + boxItems.shish + boxItems.hawawshi;
 
-  const quantityInCart = existingCartItem ? existingCartItem.count : 0;
+  const canAddToCart = product.box_size // لو فيه رقم
+    ? totalBox === product.box_size
+    : quantity > 0; // لو null → quantity العادي
+
+const addToCart = () => {
+  if (!product) return;
+
+  if (product.box_size && product.box_size > 1) {
+    // التحقق من أن عدد الساندويتشات داخل البوكس صحيح
+    const totalBox = Object.values(boxItems).reduce((a, b) => a + b, 0);
+    if (totalBox !== product.box_size) return;
+
+    dispatch(addCart({ product, quantity: boxItems }));
+  } else if (quantity > 0) {
+    dispatch(addCart({ product, quantity }));
+  }
+
+  setQuantity(0);
+  setBoxItems({ kofta: 0, shish: 0, hawawshi: 0 });
+  onClose();
+};
+
   
 
   return (
     <div>
-      <div  data-aos="flip-down" className="fixed inset-0 z-50 flex items-center justify-center mt-24">
+      <div
+        data-aos="flip-down"
+        className="fixed inset-0 z-50 flex items-center justify-center mt-24"
+      >
         <div className="bg-(--bg-color) rounded-2xl p-6 relative mx-5">
           <button
             onClick={onClose}
@@ -77,23 +104,54 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
                   {product.price}
                 </p>
               </div>
+              {product.box_size && product.box_size > 1 && (
+                <div className="box-selection mt-4">
+                  <h3 className="font-bold mb-2">اختار مكونات البوكس</h3>
+                  {(["kofta", "shish", "hawawshi"] as BoxItemKey[]).map(
+                    (item) => (
+                      <div
+                        key={item}
+                        className="flex justify-between items-center mb-2"
+                      >
+                        <span className="capitalize">{item}</span>
+                        <input
+                          type="number"
+                          min={0}
+                          value={boxItems[item]}
+                          onChange={(e) =>
+                            setBoxItems({
+                              ...boxItems,
+                              [item]: Number(e.target.value),
+                            })
+                          }
+                          className="w-16 text-center border rounded"
+                        />
+                      </div>
+                    )
+                  )}
+                  {product.box_size && totalBox !== product.box_size && (
+                    <p className="text-(--main-color) text-sm mt-1">
+                      لازم تختار {product.box_size} ساندوتش بالظبط
+                    </p>
+                  )}
+                </div>
+              )}
               <div>
                 <div className="flex flex-row-reverse justify-between items-center md:flex-col gap-2">
                   <div className="flex items-center gap-7 justify-center bg-[#F3F5F9] rounded p-1 w-full">
-                    
-
                     <button
                       onClick={() => setQuantity((q) => q + 1)}
-
                       className="w-8 h-8 text-lg rounded cursor-pointer text-black"
                     >
                       +
                     </button>
 
-                    <span className="text-black">{isNaN(quantity) ? 0 : quantity}</span>
+                    <span className="text-black">
+                      {isNaN(quantity) ? 0 : quantity}
+                    </span>
 
                     <button
-                      onClick={() => setQuantity((q) =>  q - 1)}
+                      onClick={() => setQuantity((q) => q - 1)}
                       className="w-8 h-8 text-lg rounded cursor-pointer text-black"
                       disabled={quantity <= 0}
                     >
@@ -103,8 +161,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
 
                   <button
                     onClick={addToCart}
-                    disabled={quantity <= 0}
-                    className="bg-(--main-color) text-(--text-color) py-2 rounded-lg cursor-pointer w-full disabled:opacity-50"
+                    disabled={!canAddToCart}
+                    className="bg-(--main-color) text-(--text-color) py-2 rounded-lg cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     اضف الي السله
                   </button>
