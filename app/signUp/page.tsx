@@ -36,7 +36,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center  px-4 pt-35 mb-7">
+    <div className="min-h-screen flex items-center justify-center  px-4 pt-30 mb-7">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-(--bg-color)">
         <h2 className="text-2xl font-bold text-center text-(--bg-color) mb-6">
           تسجيل حساب جديد

@@ -22,26 +22,33 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-(--bg-color)">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-(--bg-color) mt-19">
         <h2 className="text-2xl font-bold text-center text-(--bg-color) mb-6">
           تسجيل الدخول
         </h2>
         <div className="space-y-4">
+            <div>
+                <h4 className="text-80 text-(--text-color)">الإيميل</h4>
           <input
             name="email"
             placeholder="الإيميل"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color)"
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color) placeholder-shown:text-(--text-color)"
           />
+            </div>
+            <div>
+                <h4 className="text-80 text-(--text-color)">كلمة السر</h4>
+
           <input
             type="password"
             name="password"
             placeholder="كلمة السر"
             value={form.password}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color)"
-          />
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color) placeholder-shown:text-(--text-color)"
+            />
+            </div>
         </div>
         <button
           onClick={handleSubmit}
