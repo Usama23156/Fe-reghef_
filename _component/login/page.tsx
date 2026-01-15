@@ -58,7 +58,7 @@ function page() {
           </Link>
 
           <Link
-            href="/Signup"
+            href="/signUp"
             onClick={() => setDropdownOpen(false)}
             className="block px-4 py-2 text-70 hover:bg-red-800 text-(--main-color)"
           >

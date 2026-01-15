@@ -1,0 +1,61 @@
+"use client";
+
+import { useState } from "react";
+import { login } from "@/lib/auth/login"; // استدعاء من lib/auth/login
+
+export default function LoginPage() {
+  const [form, setForm] = useState({ email: "", password: "" });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await login({ email: form.email, password: form.password });
+      alert("تم تسجيل الدخول بنجاح");
+      // هنا redirect لو تحب
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md border border-(--bg-color)">
+        <h2 className="text-2xl font-bold text-center text-(--bg-color) mb-6">
+          تسجيل الدخول
+        </h2>
+        <div className="space-y-4">
+          <input
+            name="email"
+            placeholder="الإيميل"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color)"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="كلمة السر"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color)"
+          />
+        </div>
+        <button
+          onClick={handleSubmit}
+          className="mt-6 w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors "
+        >
+          تسجيل الدخول
+        </button>
+        <p className="mt-4 text-center text-sm text-gray-500">
+          ليس لديك حساب؟{" "}
+          <a href="/signUp" className="text-(--bg-color) hover:underline">
+            سجل حساب جديد
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -8,6 +8,7 @@ import Navbar from "@/_component/navbar/page";
 import Footer from "@/_component/footer/page";  
 import { Provider } from "react-redux";
 import { store } from "../store/store";
+import AuthProvider from "@/_component/authProvider/page";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,10 @@ export default function RootLayout({
       >
       <Suspense>
         <Navbar/>
+        <AuthProvider>
+
         {children}
+        </AuthProvider>
         <Footer />
         </Suspense>
       </body>
