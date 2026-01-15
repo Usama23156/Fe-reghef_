@@ -49,7 +49,7 @@ const firstCategoryId = categories?.[0]?.id;
           </Link>
           <div
             onClick={() => setOpen(!open)}
-            className={`icon md:hidden  cursor-pointer  text-(--bg-color) text-2xl  z-100001 flex  flex-wrap md:flex-nowrap justify-between items-center absolute left-[50%] top-5  ${
+            className={`icon md:hidden  cursor-pointer  text-(--bg-color) text-2xl  z-100001 flex  flex-wrap md:flex-nowrap justify-between items-center absolute left-[47%] top-5  ${
               scrollPosition > 50 ? "text-(--main-color)" : "text-(--bg-color)"
             }`}
           >
