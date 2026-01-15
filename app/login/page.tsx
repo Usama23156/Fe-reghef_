@@ -52,7 +52,7 @@ export default function LoginPage() {
         </div>
         <button
           onClick={handleSubmit}
-          className="mt-6 w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition-colors "
+          className="mt-6 w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold hover:bg-red-800 transition-colors "
         >
           تسجيل الدخول
         </button>
