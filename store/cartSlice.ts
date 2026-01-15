@@ -34,53 +34,35 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addCart: (
-      state,
-      action: PayloadAction<{ product: Product; quantity: number | BoxItems }>
-    ) => {
-      const { product, quantity } = action.payload;
+  state,
+  action: PayloadAction<{
+    product: Product;
+    count: number;
+    details?: BoxItems;
+  }>
+) => {
+  const { product, count, details } = action.payload;
 
-      const isBox = typeof quantity === "object"; // بوكس ولا ساندويتش فردي
+  const existingItem = state.products.find(
+    (item) =>
+      item.product.id === product.id &&
+      JSON.stringify(item.details) === JSON.stringify(details)
+  );
 
-      if (isBox) {
-        // البوكس يتعامل كعنصر واحد
-        const existingBox = state.products.find(
-          (item) =>
-            item.product.id === product.id &&
-            JSON.stringify(item.details) === JSON.stringify(quantity)
-        );
+  const itemTotal = product.price * count;
 
-        if (existingBox) {
-          existingBox.count += 1; // زود عدد البوكسات بمقدار 1
-          existingBox.totalPrice += product.price; // سعر بوكس واحد
-        } else {
-          state.products.push({
-            product,
-            count: 1,
-            totalPrice: product.price,
-            details: quantity,
-          });
-        }
-      } else {
-        // ساندويتش فردي
-        const existingItem = state.products.find(
-          (item) =>
-            item.product.id === product.id &&
-            !item.details // مش بوكس
-        );
-
-        if (existingItem) {
-          existingItem.count += quantity;
-          existingItem.totalPrice += product.price * quantity;
-        } else {
-          state.products.push({
-            product,
-            count: quantity,
-            totalPrice: product.price * quantity,
-          });
-        }
-      }
-    },
-
+  if (existingItem) {
+    existingItem.count += count;
+    existingItem.totalPrice += itemTotal;
+  } else {
+    state.products.push({
+      product,
+      count,
+      details,
+      totalPrice: itemTotal,
+    });
+  }
+},
     increase(state, action: PayloadAction<Product>) {
       const item = state.products.find(
         (item) => item.product.id === action.payload.id

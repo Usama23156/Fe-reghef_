@@ -26,7 +26,7 @@ interface BoxItems {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
   if (!isOpen || !product) return null;
-
+ const isBox = Boolean(product.box_size && product.box_size > 1);
   const dispatch = useDispatch();
   const cartItems = useSelector((state: any) => state.cart.products);
   const [quantity, setQuantity] = useState<number>(0);
@@ -50,31 +50,73 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
     (item: any) => item.product.id === product.id
   );
 
-  const totalBox = boxItems.kofta + boxItems.shish + boxItems.hawawshi;
+  const totalBox =
+  boxItems.kofta + boxItems.shish + boxItems.hawawshi;
 
-  const canAddToCart = product.box_size // لو فيه رقم
-    ? totalBox === product.box_size
-    : quantity > 0; // لو null → quantity العادي
+const canAddToCart = isBox
+  ? totalBox === product.box_size
+  : quantity > 0;
+
+  const increaseItem = (item: BoxItemKey) => {
+  const total = Object.values(boxItems).reduce((a, b) => a + b, 0);
+  if (product?.box_size && total >= product.box_size) return;
+
+  setBoxItems({
+    ...boxItems,
+    [item]: boxItems[item] + 1,
+  });
+};
+
+const decreaseItem = (item: BoxItemKey) => {
+  if (boxItems[item] <= 0) return;
+
+  setBoxItems({
+    ...boxItems,
+    [item]: boxItems[item] - 1,
+  });
+};
+
+  const boxItemsLabels: Record<BoxItemKey, string> = {
+  kofta: "كفتة",
+  shish: "شيش",
+  hawawshi: "حواوشي",
+};
 
 const addToCart = () => {
   if (!product) return;
 
-  if (product.box_size && product.box_size > 1) {
-    // التحقق من أن عدد الساندويتشات داخل البوكس صحيح
-    const totalBox = Object.values(boxItems).reduce((a, b) => a + b, 0);
+  if (isBox) {
+    const totalBox = Object.values(boxItems).reduce(
+      (a, b) => a + b,
+      0
+    );
+
     if (totalBox !== product.box_size) return;
 
-    dispatch(addCart({ product, quantity: boxItems }));
-  } else if (quantity > 0) {
-    dispatch(addCart({ product, quantity }));
+    dispatch(
+      addCart({
+        product,
+        details: boxItems, // مكونات البوكس
+        count: 1,          // بوكس واحد بس
+      })
+    );
+  } else {
+    if (quantity <= 0) return;
+
+    dispatch(
+      addCart({
+        product,
+        count: quantity, // عدد الساندوتشات
+      })
+    );
   }
 
+  // reset
   setQuantity(0);
   setBoxItems({ kofta: 0, shish: 0, hawawshi: 0 });
   onClose();
 };
 
-  
 
   return (
     <div>
@@ -104,7 +146,7 @@ const addToCart = () => {
                   {product.price}
                 </p>
               </div>
-              {product.box_size && product.box_size > 1 && (
+              {isBox ? (
                 <div className="box-selection mt-4">
                   <h3 className="font-bold mb-2">اختار مكونات البوكس</h3>
                   {(["kofta", "shish", "hawawshi"] as BoxItemKey[]).map(
@@ -113,19 +155,28 @@ const addToCart = () => {
                         key={item}
                         className="flex justify-between items-center mb-2"
                       >
-                        <span className="capitalize">{item}</span>
-                        <input
-                          type="number"
-                          min={0}
-                          value={boxItems[item]}
-                          onChange={(e) =>
-                            setBoxItems({
-                              ...boxItems,
-                              [item]: Number(e.target.value),
-                            })
-                          }
-                          className="w-16 text-center border rounded"
-                        />
+                        <span>{boxItemsLabels[item]}</span>
+                       <div className="flex items-center gap-4 bg-[#F3F5F9] rounded p-1">
+  <button
+    onClick={() => increaseItem(item)}
+    className="w-8 h-8 text-lg rounded cursor-pointer text-black"
+    disabled={product.box_size ? totalBox >= product.box_size : false}
+  >
+    +
+  </button>
+
+  <span className="text-black w-6 text-center">
+    {boxItems[item]}
+  </span>
+
+  <button
+    onClick={() => decreaseItem(item)}
+    className="w-8 h-8 text-lg rounded cursor-pointer text-black"
+    disabled={boxItems[item] <= 0}
+  >
+    −
+  </button>
+</div>
                       </div>
                     )
                   )}
@@ -135,10 +186,7 @@ const addToCart = () => {
                     </p>
                   )}
                 </div>
-              )}
-              <div>
-                <div className="flex flex-row-reverse justify-between items-center md:flex-col gap-2">
-                  <div className="flex items-center gap-7 justify-center bg-[#F3F5F9] rounded p-1 w-full">
+              ):( <div className="flex items-center gap-7 justify-center bg-[#F3F5F9] rounded p-1 w-full">
                     <button
                       onClick={() => setQuantity((q) => q + 1)}
                       className="w-8 h-8 text-lg rounded cursor-pointer text-black"
@@ -157,8 +205,10 @@ const addToCart = () => {
                     >
                       −
                     </button>
-                  </div>
-
+                  </div>)}
+              <div>
+                <div className="flex flex-row-reverse justify-between items-center md:flex-col gap-2">
+                 
                   <button
                     onClick={addToCart}
                     disabled={!canAddToCart}
