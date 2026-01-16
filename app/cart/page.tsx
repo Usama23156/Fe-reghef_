@@ -4,12 +4,35 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import Link from 'next/link';
 import type { RootState} from "@/store/store";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/api/client";
+
 
 const Page = () => {
   const items = useSelector((state : any) => state.cart.products);
 
    const categories = useSelector((state: RootState) => state.categories.data);
   const firstCategoryId = categories?.[0]?.id;
+
+ 
+  const router = useRouter();
+  const cartItems = useSelector((state: any) => state.cart.products);
+
+
+
+  const handleCheckout = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    router.push("/signUp"); // أو /login
+    return;
+  }
+
+  router.push("/checkOut");
+};
+
 
   const totalPrice = useMemo(() => {
     let totalNumbers = 0;
@@ -48,11 +71,14 @@ const Page = () => {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/checkout"
-className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer"              >
-               تاكيد الطلب
-              </Link>
+            
+              <button
+      onClick={handleCheckout}
+      disabled={cartItems.length === 0}
+      className="bg-(--bg-color) text-white px-2 py-2 rounded-3xl hover:bg-red-800 cursor-pointer "
+    >
+      تاكيد الطلب
+    </button>
               <Link
                 href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}
                 className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer"

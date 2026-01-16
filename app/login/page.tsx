@@ -1,10 +1,14 @@
 "use client";
-
 import { useState } from "react";
-import { login } from "@/lib/auth/login"; // استدعاء من lib/auth/login
+import { login } from "@/lib/auth/login";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/authSlice";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -12,9 +16,13 @@ export default function LoginPage() {
 
   const handleSubmit = async () => {
     try {
-      await login({ email: form.email, password: form.password });
-      alert("تم تسجيل الدخول بنجاح");
-      // هنا redirect لو تحب
+      const { user } = await login({ email: form.email, password: form.password });
+      
+      // 1️⃣ تحديث Redux
+      dispatch(setUser({ id: user.id, email: user.email }));
+
+      // 2️⃣ redirect مباشرة لـ checkout
+      router.push("/checkout");
     } catch (err: any) {
       alert(err.message);
     }
@@ -34,7 +42,7 @@ export default function LoginPage() {
             placeholder="الإيميل"
             value={form.email}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color) placeholder-shown:text-(--text-color)"
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color) placeholder-shown:text-(--text-color) text-(--text-color)"
           />
             </div>
             <div>
@@ -46,13 +54,13 @@ export default function LoginPage() {
             placeholder="كلمة السر"
             value={form.password}
             onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color) placeholder-shown:text-(--text-color)"
+            className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2  border-(--bg-color) placeholder-shown:text-(--text-color text-(--text-color))"
             />
             </div>
         </div>
         <button
           onClick={handleSubmit}
-          className="mt-6 w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold hover:bg-red-800 transition-colors "
+          className="mt-6 w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold hover:bg-red-800 transition-colors cursor-pointer "
         >
           تسجيل الدخول
         </button>
