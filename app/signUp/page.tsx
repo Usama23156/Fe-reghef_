@@ -5,6 +5,7 @@ import { signUp } from "@/lib/auth/signUp";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/store/authSlice"; // import الـ action
+import { supabase } from "@/api/client";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -38,14 +39,21 @@ export default function RegisterPage() {
       });
 
       // 2️⃣ جلب بيانات المستخدم من Supabase
-      const { data: { user } } = await (await import("@/api/client")).supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
         // 3️⃣ تحديث Redux
-        dispatch(setUser({ id: user.id, email: user.email }));
+        if (user && user.email) {
+  dispatch(
+    setUser({
+      id: user.id,
+      email: user.email,
+    })
+  );
+}
 
         // 4️⃣ الذهاب مباشرة لـ checkout
-        router.push("/checkout");
+        router.push("/");
       }
     } catch (err: any) {
       alert(err.message);

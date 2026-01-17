@@ -87,7 +87,7 @@ function UserMenu() {
 
             <button
               onClick={handleLogout}
-              className="w-full px-4 py-2 text-red-600 hover:bg-red-800"
+              className="w-full px-4 py-2 hover:bg-red-800 text-(--main-color) cursor-pointer"
             >
               تسجيل خروج
             </button>

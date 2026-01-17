@@ -22,7 +22,7 @@ export default function LoginPage() {
       dispatch(setUser({ id: user.id, email: user.email }));
 
       // 2️⃣ redirect مباشرة لـ checkout
-      router.push("/checkout");
+      router.push("/");
     } catch (err: any) {
       alert(err.message);
     }

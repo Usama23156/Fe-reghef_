@@ -7,13 +7,7 @@ interface SignUpData {
   phone: string;
 }
 
-export const signUp = async ({
-  name,
-  email,
-  password,
-  phone,
-}: SignUpData) => {
-  // 1️⃣ إنشاء حساب Auth
+export const signUp = async ({ name, email, password, phone }: SignUpData) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -21,15 +15,13 @@ export const signUp = async ({
 
   if (error) throw error;
 
-  // 2️⃣ حفظ البيانات الإضافية
-  const userId = data.user?.id;
-
-  if (!userId) throw new Error("User not created");
+  // لو user مش موجود (email confirmation)
+  if (!data.user) return;
 
   const { error: profileError } = await supabase
     .from("profiles")
     .insert({
-      id: userId,
+      id: data.user.id,
       name,
       phone,
     });
