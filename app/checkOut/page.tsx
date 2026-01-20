@@ -3,24 +3,34 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { setCart } from "@/store/cartSlice";
-import { saveCartToUser } from "@/store/cartSlice";
+import { setCart, saveCartToUser } from "@/store/cartSlice";
 import type { CartItem } from "@/store/cartSlice";
-import { supabase } from "@/api/client";
-import type { AppDispatch } from "@/store/store";
+import type { RootState, AppDispatch } from "@/store/store";
 
 type DeliveryType = "pickup" | "delivery";
 
 export default function CheckoutPage() {
- 
-const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  // Hydration safe flag
-  // const [isClient, setIsClient] = useState(false);
+  // ⚡ Hydration-safe cart state
+  const reduxCart: CartItem[] = useSelector(
+    (state: RootState) => state.cart.products
+  ) || [];
 
-  // Cart from Redux
-  const cartItems = useSelector((state: any) => state.cart.products) || [];
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    // Load from Redux first
+    setCartItems(reduxCart);
+
+    // Load from localStorage
+    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (localCart.length > 0) {
+      setCartItems(localCart);
+      dispatch(setCart(localCart));
+    }
+  }, [reduxCart, dispatch]);
 
   // User info
   const user = useSelector((state: any) => state.auth.user);
@@ -52,26 +62,13 @@ const dispatch = useDispatch<AppDispatch>();
   const isDeliveryValid =
     deliveryForm.name && deliveryForm.phone && deliveryForm.address;
 
-  // Load cart from localStorage (hydration-safe)
-  // useEffect(() => {
-  //   setIsClient(true);
-  //   const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
-  //   if (localCart.length > 0) {
-  //     dispatch(setCart(localCart));
-  //   }
-  // }, [dispatch]);
-
   // Totals
   const totalItems = useMemo(
-    () => cartItems.reduce((sum: number, item: CartItem) => sum + item.count, 0),
+    () => cartItems.reduce((sum, item) => sum + item.count, 0),
     [cartItems]
   );
   const totalPrice = useMemo(
-    () =>
-      cartItems.reduce(
-        (sum: number, item: CartItem) => sum + item.totalPrice,
-        0
-      ),
+    () => cartItems.reduce((sum, item) => sum + item.totalPrice, 0),
     [cartItems]
   );
 
@@ -79,22 +76,24 @@ const dispatch = useDispatch<AppDispatch>();
   const handleConfirmOrder = async () => {
     if (cartItems.length === 0) return;
 
-    // لو دليفري تحقق من الفورم
+    // Delivery validation
     if (deliveryType === "delivery" && !isDeliveryValid) {
       alert("اكمل بيانات الدليفري");
       return;
     }
 
-    // لو pickup تحقق من اختيار الفرع
+    // Pickup validation
     if (deliveryType === "pickup" && !selectedBranch) {
       alert("اختر الفرع");
       return;
     }
 
-    // لو اليوزر مسجل احفظ الكارت على DB
+    // Save cart to user if logged in
     if (user?.id) {
       try {
-        await dispatch(saveCartToUser({ userId: user.id, cart: cartItems }));
+        await dispatch(
+          saveCartToUser({ userId: user.id, cart: cartItems })
+        ).unwrap();
         localStorage.removeItem("cart");
       } catch (err) {
         console.error("Error saving cart:", err);
@@ -104,11 +103,6 @@ const dispatch = useDispatch<AppDispatch>();
     alert("تم تأكيد الطلب!");
     router.push("/order-confirmation"); // صفحة التأكيد
   };
-
-  // ⚡ Hydration-safe render
-  // if (!isClient) return null;
-
-  
 
   return (
     <div className="max-w-4xl mx-auto mt-20 p-6 space-y-6">
@@ -120,15 +114,19 @@ const dispatch = useDispatch<AppDispatch>();
           <button
             onClick={() => setDeliveryType("pickup")}
             className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
-              deliveryType === "pickup" ? "bg-(--bg-color) text-white" : " border-(--bg-color) text-(--text-color)"
+              deliveryType === "pickup"
+                ? "bg-(--bg-color) text-white"
+                : "text-(--text-color)"
             }`}
           >
             استلام من الفرع
           </button>
           <button
             onClick={() => setDeliveryType("delivery")}
-            className={`px-4 py-2 rounded-xl border ${
-              deliveryType === "delivery" ? "bg-(--bg-color) text-white" : " border-(--bg-color) text-(--text-color)"
+            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
+              deliveryType === "delivery"
+                ? "bg-(--bg-color) text-white"
+                : "text-(--text-color)"
             }`}
           >
             دليفري
@@ -147,9 +145,7 @@ const dispatch = useDispatch<AppDispatch>();
           >
             <option value="">-- اختر الفرع --</option>
             {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
-              </option>
+              <option key={branch.id} value={branch.id}>{branch.name}</option>
             ))}
           </select>
         </div>
@@ -190,7 +186,7 @@ const dispatch = useDispatch<AppDispatch>();
       <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
         <h2 className="text-lg font-semibold mb-3 text-(--text-color)">ملخص الطلب</h2>
         <ul className="space-y-2 text-(--text-color)">
-          {cartItems.map((item: CartItem) => (
+          {cartItems.map((item) => (
             <li key={item.product.id}>
               {item.product.name} × {item.count} = {item.totalPrice.toFixed(2)} جنيه
             </li>
