@@ -42,15 +42,17 @@ const Page = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!categories?.length) return;
+ useEffect(() => {
+  if (!categories?.length) return;
 
-    const newActiveId = id ?? categories[0].id.toString();
+  if (id) {
+    setActiveTabId(id);
+  } else {
+    setActiveTabId(categories[0].id.toString());
+  }
+}, [id, categories]);
 
-    if (newActiveId !== activeTabId) {
-      setActiveTabId(newActiveId);
-    }
-  }, [id, categories, activeTabId]);
+    
 
   const openModal = (item: Product) => {
     setSelectedProduct(item);
