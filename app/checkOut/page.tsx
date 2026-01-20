@@ -13,27 +13,29 @@ export default function CheckoutPage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  // ⚡ Hydration-safe cart state
+  // Cart from Redux
   const reduxCart: CartItem[] = useSelector(
     (state: RootState) => state.cart.products
-  ) || [];
+  );
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  useEffect(() => {
-    // Load from Redux first
-    setCartItems(reduxCart);
-
-    // Load from localStorage
-    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    if (localCart.length > 0) {
-      setCartItems(localCart);
-      dispatch(setCart(localCart));
+  // Hydration-safe cart state
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    // Initial load: Redux أو localStorage
+    if (typeof window !== "undefined") {
+      const local = localStorage.getItem("cart");
+      return local ? JSON.parse(local) : reduxCart || [];
     }
-  }, [reduxCart, dispatch]);
+    return reduxCart || [];
+  });
+
+  // Sync cartItems changes to Redux + localStorage
+  useEffect(() => {
+    dispatch(setCart(cartItems));
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems, dispatch]);
 
   // User info
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector((state: RootState) => (state as any).auth.user);
 
   // Delivery / Pickup state
   const [deliveryType, setDeliveryType] = useState<DeliveryType | null>(null);
@@ -53,10 +55,10 @@ export default function CheckoutPage() {
   const handleDeliveryChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setDeliveryForm({
-      ...deliveryForm,
+    setDeliveryForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const isDeliveryValid =
@@ -76,24 +78,22 @@ export default function CheckoutPage() {
   const handleConfirmOrder = async () => {
     if (cartItems.length === 0) return;
 
-    // Delivery validation
+
     if (deliveryType === "delivery" && !isDeliveryValid) {
       alert("اكمل بيانات الدليفري");
       return;
     }
 
-    // Pickup validation
+
     if (deliveryType === "pickup" && !selectedBranch) {
       alert("اختر الفرع");
       return;
     }
 
-    // Save cart to user if logged in
+    
     if (user?.id) {
       try {
-        await dispatch(
-          saveCartToUser({ userId: user.id, cart: cartItems })
-        ).unwrap();
+        await dispatch(saveCartToUser({ userId: user.id, cart: cartItems })).unwrap();
         localStorage.removeItem("cart");
       } catch (err) {
         console.error("Error saving cart:", err);
@@ -101,7 +101,7 @@ export default function CheckoutPage() {
     }
 
     alert("تم تأكيد الطلب!");
-    router.push("/order-confirmation"); // صفحة التأكيد
+    router.push("/order-confirmation");
   };
 
   return (
@@ -113,7 +113,7 @@ export default function CheckoutPage() {
         <div className="flex gap-4">
           <button
             onClick={() => setDeliveryType("pickup")}
-            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
+            className={`px-4 py-2 rounded-xl border ${
               deliveryType === "pickup"
                 ? "bg-(--bg-color) text-white"
                 : "text-(--text-color)"
@@ -123,7 +123,7 @@ export default function CheckoutPage() {
           </button>
           <button
             onClick={() => setDeliveryType("delivery")}
-            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
+            className={`px-4 py-2 rounded-xl border ${
               deliveryType === "delivery"
                 ? "bg-(--bg-color) text-white"
                 : "text-(--text-color)"
@@ -145,7 +145,9 @@ export default function CheckoutPage() {
           >
             <option value="">-- اختر الفرع --</option>
             {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>{branch.name}</option>
+              <option key={branch.id} value={branch.id}>
+                {branch.name}
+              </option>
             ))}
           </select>
         </div>
@@ -187,7 +189,7 @@ export default function CheckoutPage() {
         <h2 className="text-lg font-semibold mb-3 text-(--text-color)">ملخص الطلب</h2>
         <ul className="space-y-2 text-(--text-color)">
           {cartItems.map((item) => (
-            <li key={item.product.id}>
+            <li key={`${item.product.id}-${JSON.stringify(item.details)}`}>
               {item.product.name} × {item.count} = {item.totalPrice.toFixed(2)} جنيه
             </li>
           ))}
