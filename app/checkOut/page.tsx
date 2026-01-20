@@ -17,7 +17,7 @@ const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   // Hydration safe flag
-  const [isClient, setIsClient] = useState(false);
+  // const [isClient, setIsClient] = useState(false);
 
   // Cart from Redux
   const cartItems = useSelector((state: any) => state.cart.products) || [];
@@ -106,7 +106,7 @@ const dispatch = useDispatch<AppDispatch>();
   };
 
   // ⚡ Hydration-safe render
-  if (!isClient) return null;
+  // if (!isClient) return null;
 
   
 
