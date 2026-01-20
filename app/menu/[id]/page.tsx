@@ -9,6 +9,8 @@ import { useParams } from "next/navigation";
 import Loading from "@/_component/loading/page";
 import { Category } from "@/types/category";
 import { product } from "@/types/products";
+import { useRouter } from "next/navigation";
+
 
 interface Product {
   id: number;
@@ -23,7 +25,9 @@ export const dynamic = "force-dynamic";
 const Page = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  // const [activeTabId, setActiveTabId] = useState<string | null>(null);
+    const router = useRouter();
+  
 
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
@@ -42,17 +46,11 @@ const Page = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
- useEffect(() => {
-  if (!categories?.length) return;
+ const activeTabId = useMemo(() => {
+    if (!categories?.length) return null;
+    return id ?? categories[0].id.toString();
+  }, [id, categories]);
 
-  if (id) {
-    setActiveTabId(id);
-  } else {
-    setActiveTabId(categories[0].id.toString());
-  }
-}, [id, categories]);
-
-    
 
   const openModal = (item: Product) => {
     setSelectedProduct(item);
@@ -85,7 +83,7 @@ const Page = () => {
         {categories?.map((item: Category) => (
           <li
             key={item.id}
-            onClick={() => setActiveTabId(item.id.toString())}
+               onClick={() => router.push(`/menu/${item.id}`)}
             className={`cursor-pointer ${
               activeTabId === item.id.toString()
                 ? "font-bold text-red-600"
