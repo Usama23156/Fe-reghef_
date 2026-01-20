@@ -12,7 +12,7 @@ import { Category } from "@/types/category";
 
 export const dynamic = "force-dynamic";
 
- const page = () => {
+ const Page = () => {
 const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
@@ -157,4 +157,4 @@ const [isModalOpen, setIsModalOpen] = useState(false);
     </div>
   )
 }
-export default page
+export default Page
