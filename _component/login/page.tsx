@@ -56,7 +56,7 @@ function UserMenu() {
         <FaRegCircleUser />
       </button>
 
-      <div className={`absolute left-[-55] mt-2 w-44 bg-(--bg-color) border border-(--text-color) shadow-lg rounded z-50 text-center transition-all duration-200 ${dropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
+      <div className={`absolute left-1 mt-2 w-44 bg-(--bg-color) border border-(--text-color) shadow-lg rounded z-50 text-center transition-all duration-200 ${dropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
         {!User ? (
           <>
             <Link

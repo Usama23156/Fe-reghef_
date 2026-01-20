@@ -21,15 +21,6 @@ const Page = () => {
 
 
   const handleCheckout = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    router.push("/signUp"); // أو /login
-    return;
-  }
-
   router.push("/checkOut");
 };
 
@@ -73,6 +64,8 @@ const Page = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             
               <button
+              
+
       onClick={handleCheckout}
       disabled={cartItems.length === 0}
       className="bg-(--bg-color) text-white px-2 py-2 rounded-3xl hover:bg-red-800 cursor-pointer "
