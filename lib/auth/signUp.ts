@@ -1,30 +1,43 @@
+// src/lib/auth/signupHandler.ts
+import { AppDispatch } from "@/store/store";
+import { setUser, setLoading } from "@/store/authSlice";
 import { supabase } from "@/api/client";
 
-interface SignUpData {
-  name: string;
+interface SignupData {
   email: string;
   password: string;
-  phone: string;
+  name?: string;
+  phone?: string;
 }
 
-export const signUp = async ({ name, email, password, phone }: SignUpData) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+export const signupUser = async (
+  dispatch: AppDispatch,
+  data: SignupData
+) => {
+  try {
+    dispatch(setLoading(true));
 
-  if (error) throw error;
-
-  // لو user مش موجود (email confirmation)
-  if (!data.user) return;
-
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
-      id: data.user.id,
-      name,
-      phone,
+    const { data: result, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
     });
 
-  if (profileError) throw profileError;
+    if (error) throw new Error(error.message);
+
+    if (result.user) {
+      dispatch(
+        setUser({
+          id: result.user.id,
+          email: result.user.email || "",
+          name: data.name,
+          phone: data.phone,
+          created_at: result.user.created_at || "",
+        })
+      );
+    }
+  } catch (err) {
+    throw err;
+  } finally {
+    dispatch(setLoading(false));
+  }
 };

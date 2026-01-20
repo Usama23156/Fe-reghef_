@@ -35,7 +35,7 @@ export default function CheckoutPage() {
   }, [cartItems, dispatch]);
 
   // User info
-  const user = useSelector((state: RootState) => (state as any).auth.user);
+const user = useSelector((state: RootState) => state.auth.user);
 
   // Delivery / Pickup state
   const [deliveryType, setDeliveryType] = useState<DeliveryType | null>(null);
