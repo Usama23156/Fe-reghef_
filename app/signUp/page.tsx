@@ -9,13 +9,21 @@ import { saveCartToUser, setCart } from "@/store/cartSlice";
 import { supabase } from "@/api/client";
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    rePassword: "",
-    phone: "",
-  });
+  type FormFields = {
+  name: string;
+  email: string;
+  password: string;
+  rePassword: string;
+  phone: string;
+};
+
+const [form, setForm] = useState<FormFields>({
+  name: "",
+  email: "",
+  password: "",
+  rePassword: "",
+  phone: "",
+});
 
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();

@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import { CartItem } from "@/store/cartSlice";
 
 function Page() {
   const [isClient, setIsClient] = useState(false);
@@ -15,7 +16,7 @@ function Page() {
   const totalItems = useMemo(() => {
     if (!isClient) return 0;
 
-    return cartItems.reduce((total: number, item: any) => {
+    return cartItems.reduce((total: number, item: CartItem) => {
       return total + item.count;
     }, 0);
   }, [cartItems, isClient]);
@@ -23,7 +24,7 @@ function Page() {
   const totalPrice = useMemo(() => {
     if (!isClient) return 0;
 
-    return cartItems.reduce((total: number, item: any) => {
+    return cartItems.reduce((total: number, item: CartItem) => {
       return total + item.totalPrice;
     }, 0);
   }, [cartItems, isClient]);
