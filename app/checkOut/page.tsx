@@ -53,13 +53,13 @@ const dispatch = useDispatch<AppDispatch>();
     deliveryForm.name && deliveryForm.phone && deliveryForm.address;
 
   // Load cart from localStorage (hydration-safe)
-  useEffect(() => {
-    setIsClient(true);
-    const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    if (localCart.length > 0) {
-      dispatch(setCart(localCart));
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   setIsClient(true);
+  //   const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+  //   if (localCart.length > 0) {
+  //     dispatch(setCart(localCart));
+  //   }
+  // }, [dispatch]);
 
   // Totals
   const totalItems = useMemo(
