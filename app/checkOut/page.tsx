@@ -119,8 +119,8 @@ const dispatch = useDispatch<AppDispatch>();
         <div className="flex gap-4">
           <button
             onClick={() => setDeliveryType("pickup")}
-            className={`px-4 py-2 rounded-xl border ${
-              deliveryType === "pickup" ? "bg-(--bg-color) text-white" : "border-gray-300 text-(--text-color)"
+            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
+              deliveryType === "pickup" ? "bg-(--bg-color) text-white" : " border-(--bg-color) text-(--text-color)"
             }`}
           >
             استلام من الفرع
@@ -128,7 +128,7 @@ const dispatch = useDispatch<AppDispatch>();
           <button
             onClick={() => setDeliveryType("delivery")}
             className={`px-4 py-2 rounded-xl border ${
-              deliveryType === "delivery" ? "bg-(--bg-color) text-white" : "border-gray-300 text-(--text-color)"
+              deliveryType === "delivery" ? "bg-(--bg-color) text-white" : " border-(--bg-color) text-(--text-color)"
             }`}
           >
             دليفري

@@ -1,14 +1,14 @@
 "use client";
-import { decrease, increase, removeItem } from "@/store/cartSlice";
+import { decrease, increase, removeItem, CartItem } from "@/store/cartSlice";
 import React from "react";
 import { useDispatch } from "react-redux";
 
-export default function page({ data }: { data: any }) {
+export default function Page({ data }: { data: CartItem }) {
   const dispatch = useDispatch();
 
-  const increasee = () => dispatch(increase(data.product));
-  const decreseItems = () => dispatch(decrease(data.product));
-  const remooveItem = () => dispatch(removeItem(data.product));
+  const increasee = () => dispatch(increase(data));
+  const decreseItems = () => dispatch(decrease(data));
+  const remooveItem = () => dispatch(removeItem(data));
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-b ">
@@ -21,14 +21,12 @@ export default function page({ data }: { data: any }) {
         <div className="flex-col">
           <p className="text-gray-800 font-medium items-end flex">{data.product.name}</p>
           {data.details && (
-  <ul className="text-gray-600 flex gap-4">
-    {data.details.kofta > 0 && <li>{data.details.kofta} كفته</li>}
-    {data.details.shish > 0 && <li>{data.details.shish} شيش</li>}
-    {data.details.hawawshi > 0 && (
-      <li>{data.details.hawawshi} حواوشي</li>
-    )}
-  </ul>
-)}
+            <ul className="text-gray-600 flex gap-4">
+              {data.details.kofta > 0 && <li>{data.details.kofta} كفته</li>}
+              {data.details.shish > 0 && <li>{data.details.shish} شيش</li>}
+              {data.details.hawawshi > 0 && <li>{data.details.hawawshi} حواوشي</li>}
+            </ul>
+          )}
         </div>
       </div>
 
@@ -39,9 +37,7 @@ export default function page({ data }: { data: any }) {
         >
           +
         </button>
-        <span className="min-w-8 text-center text-sm text-gray-700">
-          {data.count}
-        </span>
+        <span className="min-w-8 text-center text-sm text-gray-700">{data.count}</span>
         <button
           onClick={decreseItems}
           className="w-8 h-8 border rounded-full text-gray-600 cursor-pointer"

@@ -48,7 +48,7 @@ const dispatch = useDispatch<AppDispatch>();
           });
 
           // 5️⃣ تحديث Redux state للكارت
-          dispatch(saveCartToUser({ cart: CartItem }));
+          // dispatch(saveCartToUser({ cart: CartItem }));
 
           // نظف localStorage
           localStorage.removeItem("cart");
