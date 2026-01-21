@@ -38,7 +38,7 @@ export default function CheckoutPage() {
 const user = useSelector((state: RootState) => state.auth.user);
 
   // Delivery / Pickup state
-  const [deliveryType, setDeliveryType] = useState<DeliveryType | null>(null);
+const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
   const [selectedBranch, setSelectedBranch] = useState("");
   const branches = [
     { id: "branch-1", name: "فرع سان جوزيف" },
@@ -113,7 +113,7 @@ const user = useSelector((state: RootState) => state.auth.user);
         <div className="flex gap-4">
           <button
             onClick={() => setDeliveryType("pickup")}
-            className={`px-4 py-2 rounded-xl border ${
+            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
               deliveryType === "pickup"
                 ? "bg-(--bg-color) text-white"
                 : "text-(--text-color)"
@@ -123,7 +123,7 @@ const user = useSelector((state: RootState) => state.auth.user);
           </button>
           <button
             onClick={() => setDeliveryType("delivery")}
-            className={`px-4 py-2 rounded-xl border ${
+            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
               deliveryType === "delivery"
                 ? "bg-(--bg-color) text-white"
                 : "text-(--text-color)"
@@ -136,6 +136,24 @@ const user = useSelector((state: RootState) => state.auth.user);
 
       {/* Pickup branch */}
       {deliveryType === "pickup" && (
+         <div className="bg-white rounded-xl p-4 shadow space-y-4 border border-(--bg-color)">
+          <h2 className="text-lg font-semibold text-(--text-color)">بيانات الدليفري</h2>
+          <input
+            type="text"
+            name="name"
+            placeholder="الاسم"
+            value={deliveryForm.name}
+            onChange={handleDeliveryChange}
+            className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
+          />
+          <input
+            type="tel"
+            name="phone"
+            placeholder="رقم الموبايل"
+            value={deliveryForm.phone}
+            onChange={handleDeliveryChange}
+            className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
+          />
         <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
           <h2 className="text-lg font-semibold mb-3 text-(--text-color)">اختر الفرع</h2>
           <select
@@ -150,6 +168,7 @@ const user = useSelector((state: RootState) => state.auth.user);
               </option>
             ))}
           </select>
+        </div>
         </div>
       )}
 

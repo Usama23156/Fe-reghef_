@@ -64,33 +64,39 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 pt-24">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-(--bg-color)">
-        <h2 className="text-2xl font-bold text-center text-(--bg-color) mb-6">
+        <h2 className="text-2xl font-bold text-center text-(--text-color) mb-6">
           تسجيل الدخول
         </h2>
 
         <div className="space-y-4">
+          <div className="flex flex-col">
+          <label htmlFor="email" className="text-(--text-color)">الإيميل</label>
           <input
             placeholder="الإيميل"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="password" className="text-(--text-color)"> كلمة السر</label>
           <input
             type="password"
             placeholder="كلمة السر"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="input"
+            className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />
         </div>
+        </div>
 
-        <button onClick={handleLogin} className="btn-main mt-6">
+        <button onClick={handleLogin} className="btn-main mt-6 bg-(--bg-color) p-2 rounded-2xl w-full cursor-pointer">
           دخول
         </button>
 
-        <p className="text-center text-sm mt-4">
+        <p className="text-center text-sm mt-4 text-(--text-color)">
           ليس لديك حساب؟{" "}
-          <a href="/signUp" className="text-(--bg-color)">
+          <a href="/signUp" className="text-(--bg-color) cursor-pointer">
             سجل الآن
           </a>
         </p>
