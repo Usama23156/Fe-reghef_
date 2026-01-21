@@ -22,16 +22,14 @@ interface Product {
 
 export const dynamic = "force-dynamic";
 
-const Page = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  // const [activeTabId, setActiveTabId] = useState<string | null>(null);
-    const router = useRouter();
-  
+ const Page = () => {
 
+
+const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const params = useParams();
-  const id = params.id as string | undefined;
+
 
   const { data: categories } = useSelector(
     (state: RootState) => state.categories
@@ -40,13 +38,16 @@ const Page = () => {
   const { products, loading } = useSelector(
     (state: RootState) => state.products
   );
+  const params = useParams();
+
+  const id = params.id as string;
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchProducts());
   }, [dispatch]);
 
- const activeTabId = useMemo(() => {
+  const activeTabId = useMemo(() => {
     if (!categories?.length) return null;
     return id ?? categories[0].id.toString();
   }, [id, categories]);
@@ -64,51 +65,94 @@ const Page = () => {
 
   const activeItems = useMemo(() => {
     if (!products || !activeTabId) return [];
+
     return products.filter(
       (item) => item.category_id.toString() === activeTabId
     );
   }, [products, activeTabId]);
 
-  if (loading) {
+  const isLoading = loading;
+
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen text-black">
         <Loading />
       </div>
     );
   }
 
+
   return (
-    <div className="pt-16">
-      <ul className="flex justify-center gap-4">
-        {categories?.map((item: Category) => (
-          <li
-            key={item.id}
-               onClick={() => router.push(`/menu/${item.id}`)}
-            className={`cursor-pointer ${
-              activeTabId === item.id.toString()
-                ? "font-bold text-red-600"
-                : ""
-            }`}
-          >
-            {item.name}
-          </li>
-        ))}
-      </ul>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
-        {activeItems.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => openModal(item)}
-            className="border rounded-lg p-4 cursor-pointer"
-          >
-            <img src={item.image} alt={item.name} />
-            <h3>{item.name}</h3>
-            <p>{item.price}</p>
+    <div>
+      <div className="pt-16">
+        <div
+          className=" w-full min-h-screen bg-center bg-cover relative"
+          style={{ backgroundImage: `url(/box9.jpeg)` }}
+        ></div>
+         <div>
+      <div className="justify-between items-center transition-[0.5s] px-6 lg:px-25 py-2 md:py-3">
+        <div className="flex md:relative left-0 w-full h-auto lg:flex flex-col md:flex-row items-center md:justify-center">
+          <div className=" py-4 md:py-7 flex flex-col lg:flex-row w-full justify-between items-start lg:items-center gap-4 xl:px-37.5">
+            <div className="w-full ">
+              <ul className="flex flex-row justify-center items-start lg:items-center gap-2 md:gap-0 mt-5 lg:mt-0  md:pl-0">
+                {categories?.map((item: Category) => (
+                  <li
+                    key={item.id}
+                    className="flex justify-center items-center gap-2 uppercase font-semibold text-[#3E445A] text-xl  px-3 py-2 md:py-3 cursor-pointer"
+                     onClick={() => router.push(`/menu/${item.id}`)}
+                  >
+                    <div
+                      className={`${
+                        activeTabId === item.id.toString()
+                          ? "text-(--bg-color) font-bold  "
+                          : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
-
+      <div className="row flex flex-col mt-10 mb-10 mx-auto">
+        <div className="p-10 flex justify-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 w-fit mx-auto justify-center">
+            {activeItems.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => openModal(item)} // Open modal on click
+                className="p-0 mb-2 flex flex-col justify-center rounded-lg border border-(--bg-color) shadow-lg hover:scale-95 transition-all duration-200 relative overflow-hidden w-full cursor-pointer"
+              >
+                <div className="pb-0">
+                  <div className="aspect-square w-36 h-24 rounded-lg rounded-b-none mb-3 overflow-hidden flex items-center justify-center">
+                    <img
+                      src={item.image}
+                      alt={item.name} // Use item.name for better accessibility
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+                <div className="px-5 pt-0">
+                  <h3 className="text-xl font-medium text-black ">
+                    {item.name}
+                  </h3>
+                  <span className="text-[13px] text-black">
+                    {item.price} 
+                  </span>
+                </div>
+                <div className="flex justify-center items-center mb-2 mt-2">
+                  <button className="bg-(--bg-color) text-white py-1 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer">
+                    اضف الي السله
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       {isModalOpen && (
         <ProductPopp
           isOpen={isModalOpen}
@@ -117,7 +161,8 @@ const Page = () => {
         />
       )}
     </div>
-  );
-};
-
-export default Page;
+      </div>
+    </div>
+  )
+}
+export default Page
