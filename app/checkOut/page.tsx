@@ -115,7 +115,7 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
             onClick={() => setDeliveryType("pickup")}
             className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
               deliveryType === "pickup"
-                ? "bg-(--bg-color) text-white"
+                ? "bg-(--bg-color) text-white cursor-pointer"
                 : "text-(--text-color)"
             }`}
           >
@@ -125,7 +125,7 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
             onClick={() => setDeliveryType("delivery")}
             className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
               deliveryType === "delivery"
-                ? "bg-(--bg-color) text-white"
+                ? "bg-(--bg-color) text-white cursor-pointer"
                 : "text-(--text-color)"
             }`}
           >
@@ -137,7 +137,7 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
       {/* Pickup branch */}
       {deliveryType === "pickup" && (
          <div className="bg-white rounded-xl p-4 shadow space-y-4 border border-(--bg-color)">
-          <h2 className="text-lg font-semibold text-(--text-color)">بيانات الدليفري</h2>
+          <h2 className="text-lg font-semibold text-(--text-color)">بيانات الاستلام</h2>
           <input
             type="text"
             name="name"
