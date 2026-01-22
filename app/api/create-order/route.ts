@@ -19,21 +19,22 @@ interface CreateOrderBody {
 
 export async function POST(req: NextRequest) {
   try {
-    const body: CreateOrderBody = await req.json();
+    const body = await req.json();
 
-    const { data, error } = await supabaseServer
-      .from("orders")
-      .insert([body])
-      .select(); // نرجع بيانات الطلب بعد الإنشاء
+    const { data, error } = await supabaseServer.from("orders").insert([body]).select();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data[0]);
+    return NextResponse.json(data[0], { status: 200 });
   } catch (err: unknown) {
-    let message = "حدث خطأ أثناء تأكيد الطلب";
-    if (err instanceof Error) message = err.message;
-    return NextResponse.json({ error: message }, { status: 500 });
+  let message = "Unknown error";
+
+  if (err instanceof Error) {
+    message = err.message;
   }
+
+  return NextResponse.json({ error: message }, { status: 500 });
+}
 }
