@@ -97,7 +97,7 @@ const handleConfirmOrder = async () => {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     order_number: generateOrderNumber(),
-    user_id: user?.id || null,
+    user_id: user?.id || null,  // ممكن يكون null لو مش عامل login
     customer_name: deliveryForm.name,
     customer_phone: deliveryForm.phone,
     items: cartItems,
@@ -105,8 +105,14 @@ const handleConfirmOrder = async () => {
     delivery_type: deliveryType,
     address: deliveryType === "delivery" ? deliveryForm.address : null,
     branch: deliveryType === "pickup" ? selectedBranch : null,
+    status: "pending",
   }),
 });
+
+if (!res.ok) {
+  const err = await res.json();
+  throw new Error(err.error || "حدث خطأ أثناء تأكيد الطلب");
+}
 
 const newOrder = await res.json();
 
