@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
   if (err instanceof Error) {
     message = err.message;
   }
-
   return NextResponse.json({ error: message }, { status: 500 });
 }
 }
