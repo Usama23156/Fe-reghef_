@@ -8,7 +8,12 @@ interface CreateOrderBody {
   user_id: string | null;
   customer_name: string;
   customer_phone: string;
-  items: any[]; // ممكن تحدد شكل العناصر بعدين
+  items: {
+    product: { id: string; name: string };
+    count: number;
+    totalPrice: number;
+    details?: any; // لو عندك تفاصيل ممكن تعمل نوع مناسب
+  }[]; // ممكن تحدد شكل العناصر بعدين
   total: number;
   delivery_type: "pickup" | "delivery";
   address?: string | null;
