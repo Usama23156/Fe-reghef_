@@ -75,7 +75,7 @@ export default function SignupPage() {
         }
       }
 
-      router.push("/checkout");
+      router.push("/");
     } catch (err) {
       alert((err as Error).message);
     }

@@ -75,6 +75,9 @@ export default function CheckoutPage() {
   const isDeliveryValid =
     deliveryForm.name && deliveryForm.phone && deliveryForm.address;
 
+  // const selectedBranch =
+  //   pickupForm.name && pickupForm.phone ;
+
   // Confirm Order
 const handleConfirmOrder = async () => {
   if (cartItems.length === 0) return;

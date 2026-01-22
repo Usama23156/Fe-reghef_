@@ -23,7 +23,7 @@ const Page = () => {
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg p-4">
       {cartItems.length < 1 ? (
-        <div className="py-40 text-mainColor text-center h-[85vh] mt-10">
+        <div className="pt-[50%] md:pt-40 text-mainColor text-center h-[85vh] mt-30">
           <h1 className="text-2xl sm:text-3xl text-black mb-8">الكارت فاضي</h1>
           <Link
             href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}

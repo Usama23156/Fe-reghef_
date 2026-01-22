@@ -53,7 +53,7 @@ export default function LoginPage() {
         }
       }
 
-      router.push("/checkout");
+      router.push("/");
     } catch (err) {
       alert((err as Error).message);
     }
