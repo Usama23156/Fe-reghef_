@@ -3,9 +3,10 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { setCart, saveCartToUser } from "@/store/cartSlice";
+import { setCart, cleanUpCart, saveCartToUser } from "@/store/cartSlice";
 import type { CartItem } from "@/store/cartSlice";
 import type { RootState, AppDispatch } from "@/store/store";
+import { generateOrderNumber } from "@/lib/generateOrderNumber";
 
 type DeliveryType = "pickup" | "delivery";
 
@@ -20,7 +21,6 @@ export default function CheckoutPage() {
 
   // Hydration-safe cart state
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    // Initial load: Redux أو localStorage
     if (typeof window !== "undefined") {
       const local = localStorage.getItem("cart");
       return local ? JSON.parse(local) : reduxCart || [];
@@ -28,24 +28,24 @@ export default function CheckoutPage() {
     return reduxCart || [];
   });
 
-  // Sync cartItems changes to Redux + localStorage
+  // Sync cartItems to Redux + localStorage
   useEffect(() => {
     dispatch(setCart(cartItems));
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems, dispatch]);
 
   // User info
-const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   // Delivery / Pickup state
-const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
   const [selectedBranch, setSelectedBranch] = useState("");
   const branches = [
     { id: "branch-1", name: "فرع سان جوزيف" },
     { id: "branch-2", name: "فرع الجولي فيل" },
   ];
 
-  // Delivery form
+  // Delivery form state (Unified for pickup & delivery)
   const [deliveryForm, setDeliveryForm] = useState({
     name: "",
     phone: "",
@@ -53,16 +53,13 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
   });
 
   const handleDeliveryChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setDeliveryForm((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
-  const isDeliveryValid =
-    deliveryForm.name && deliveryForm.phone && deliveryForm.address;
 
   // Totals
   const totalItems = useMemo(
@@ -74,35 +71,64 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
     [cartItems]
   );
 
+  // Delivery validation
+  const isDeliveryValid =
+    deliveryForm.name && deliveryForm.phone && deliveryForm.address;
+
   // Confirm Order
-  const handleConfirmOrder = async () => {
-    if (cartItems.length === 0) return;
+const handleConfirmOrder = async () => {
+  if (cartItems.length === 0) return;
+
+  if (deliveryType === "delivery" && !isDeliveryValid) {
+    alert("اكمل بيانات الدليفري");
+    return;
+  }
+
+  if (deliveryType === "pickup" && !selectedBranch) {
+    alert("اختر الفرع");
+    return;
+  }
 
 
-    if (deliveryType === "delivery" && !isDeliveryValid) {
-      alert("اكمل بيانات الدليفري");
-      return;
-    }
+  try {
+    // 1️⃣ إنشاء الطلب في Supabase
+   const res = await fetch("/api/create-order", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    order_number: generateOrderNumber(),
+    user_id: user?.id || null,
+    customer_name: deliveryForm.name,
+    customer_phone: deliveryForm.phone,
+    items: cartItems,
+    total: totalPrice,
+    delivery_type: deliveryType,
+    address: deliveryType === "delivery" ? deliveryForm.address : null,
+    branch: deliveryType === "pickup" ? selectedBranch : null,
+  }),
+});
+
+const newOrder = await res.json();
 
 
-    if (deliveryType === "pickup" && !selectedBranch) {
-      alert("اختر الفرع");
-      return;
-    }
 
+
+    // 2️⃣ مسح الكارت
+    dispatch(cleanUpCart());
+    localStorage.removeItem("cart");
+
+    // 3️⃣ فتح صفحة التأكيد مع تمرير البيانات
+   const queryString = new URLSearchParams({
+  orderNumber: newOrder.order_number,
+}).toString();
+
+router.push(`/order-confirmation?${queryString}`);
+  } catch (error) {
     
-    if (user?.id) {
-      try {
-        await dispatch(saveCartToUser({ userId: user.id, cart: cartItems })).unwrap();
-        localStorage.removeItem("cart");
-      } catch (err) {
-        console.error("Error saving cart:", err);
-      }
-    }
+    alert("حصل خطأ أثناء تأكيد الطلب");
+  }
+};
 
-    alert("تم تأكيد الطلب!");
-    router.push("/order-confirmation");
-  };
 
   return (
     <div className="max-w-4xl mx-auto mt-20 p-6 space-y-6">
@@ -136,7 +162,7 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
 
       {/* Pickup branch */}
       {deliveryType === "pickup" && (
-         <div className="bg-white rounded-xl p-4 shadow space-y-4 border border-(--bg-color)">
+        <div className="bg-white rounded-xl p-4 shadow space-y-4 border border-(--bg-color)">
           <h2 className="text-lg font-semibold text-(--text-color)">بيانات الاستلام</h2>
           <input
             type="text"
@@ -154,21 +180,21 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
             onChange={handleDeliveryChange}
             className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
           />
-        <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
-          <h2 className="text-lg font-semibold mb-3 text-(--text-color)">اختر الفرع</h2>
-          <select
-            value={selectedBranch}
-            onChange={(e) => setSelectedBranch(e.target.value)}
-            className="w-full rounded-lg px-3 py-2 border border-(--bg-color) text-(--text-color)"
-          >
-            <option value="">-- اختر الفرع --</option>
-            {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
+            <h2 className="text-lg font-semibold mb-3 text-(--text-color)">اختر الفرع</h2>
+            <select
+              value={selectedBranch}
+              onChange={(e) => setSelectedBranch(e.target.value)}
+              className="w-full rounded-lg px-3 py-2 border border-(--bg-color) text-(--text-color)"
+            >
+              <option value="">-- اختر الفرع --</option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       )}
 
@@ -226,7 +252,7 @@ const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
           (deliveryType === "pickup" && !selectedBranch) ||
           (deliveryType === "delivery" && !isDeliveryValid)
         }
-        className="w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold disabled:opacity-50"
+        className="w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold disabled:opacity-50 cursor-pointer"
       >
         تأكيد الطلب
       </button>
