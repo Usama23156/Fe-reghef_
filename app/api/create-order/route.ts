@@ -1,39 +1,55 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // مهم
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function POST(req: Request) {
+type OrderItem = {
+  product: {
+    id: string;
+    name: string;
+  };
+  count: number;
+  totalPrice: number;
+  details?: Record<string, string>;
+};
+
+type CreateOrderBody = {
+  order_number: string;
+  user_id: string | null;
+  customer_name: string;
+  customer_phone: string;
+  items: OrderItem[];
+  total: number;
+  delivery_type: "pickup" | "delivery";
+  address: string | null;
+  branch: string | null;
+  status: "pending" | "completed" | "cancelled";
+};
+export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body: CreateOrderBody = await req.json();
 
     const { data, error } = await supabase
       .from("orders")
-      .insert({
-        order_number: body.order_number,
-        user_id: body.user_id || null, // ضيف أو لوجين
-        customer_name: body.customer_name,
-        customer_phone: body.customer_phone,
-        items: body.items,
-        total: body.total,
-        delivery_type: body.delivery_type,
-        address: body.address,
-        branch: body.branch,
-        status: "pending",
-      })
+      .insert([body])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
 
-    return NextResponse.json(data);
-  } catch (err: any) {
+    return NextResponse.json(data, { status: 201 });
+  } catch (error) {
     return NextResponse.json(
-      { error: err.message },
-      { status: 500 }
+      { error: "Invalid request" },
+      { status: 400 }
     );
   }
 }

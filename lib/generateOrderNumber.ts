@@ -2,9 +2,12 @@ export const generateOrderNumber = () => {
   const date = new Date()
     .toISOString()
     .slice(0, 10)
-    .replace(/-/g, "");
+    .replace(/-/g, ""); // YYYYMMDD
 
-  const random = Math.floor(1000 + Math.random() * 9000);
+  const number = Math.floor(Math.random() * 101); // 0 → 100
 
-  return `ORD-${date}-${random}`;
+  return {
+    date,
+    number,
+  };
 };
