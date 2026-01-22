@@ -1,13 +1,10 @@
 export const generateOrderNumber = () => {
-  const date = new Date()
-    .toISOString()
-    .slice(0, 10)
-    .replace(/-/g, ""); // YYYYMMDD
+  // const date = new Date()
+  //   .toISOString()
+  //   .slice(0, 10)
+  //   .replace(/-/g, "");
 
-  const number = Math.floor(Math.random() * 101); // 0 → 100
+   const random = Math.floor(Math.random() * 101); 
 
-  return {
-    date,
-    number,
-  };
+  return `${random}`;
 };

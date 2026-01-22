@@ -7,10 +7,6 @@ export default function OrderConfirmation() {
     const params = useSearchParams();
 const order= params.get("orderNumber") || "غير محدد";
 
- const parts = order?.split("-") || [];
-  const orderDate = parts[1] || "غير محدد";
-  const orderCode = parts[2] || "غير محدد";
-
 
 
   return (
@@ -22,8 +18,7 @@ const order= params.get("orderNumber") || "غير محدد";
         <p className="text-lg text-(--text-color)">
           سوف يتم توصيل الطلب خلال 30 دقيقه ⏱️
         </p>
-        <p className="text-(--text-color)">تاريخ الطلب: { orderDate}</p>
-        <p className="text-(--text-color)">رقم الطلب: { orderCode}</p>
+        <p className="text-(--text-color)">رقم الطلب: {order}</p>
       </div>
     </div>
   );

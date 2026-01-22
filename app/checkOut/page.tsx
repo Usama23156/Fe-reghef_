@@ -92,12 +92,12 @@ const handleConfirmOrder = async () => {
 
   try {
     // 1️⃣ إنشاء الطلب في Supabase
-   const res = await fetch("/api/create-order", {
+    const res = await fetch("/api/create-order", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     order_number: generateOrderNumber(),
-    user_id: user?.id || null,  // ممكن يكون null لو مش عامل login
+    user_id: user?.id || null,
     customer_name: deliveryForm.name,
     customer_phone: deliveryForm.phone,
     items: cartItems,
@@ -109,13 +109,7 @@ const handleConfirmOrder = async () => {
   }),
 });
 
-if (!res.ok) {
-  const err = await res.json();
-  throw new Error(err.error || "حدث خطأ أثناء تأكيد الطلب");
-}
-
 const newOrder = await res.json();
-
 
 
 
