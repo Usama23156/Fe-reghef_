@@ -1,6 +1,7 @@
 // app/api/create-order/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/api/supabaseServer";
+import type { CartItem } from "@/store/cartSlice";
 
 // Define the expected body type
 interface CreateOrderBody {
@@ -8,12 +9,7 @@ interface CreateOrderBody {
   user_id: string | null;
   customer_name: string;
   customer_phone: string;
-  items: {
-    product: { id: string; name: string };
-    count: number;
-    totalPrice: number;
-    details?: any; // لو عندك تفاصيل ممكن تعمل نوع مناسب
-  }[]; // ممكن تحدد شكل العناصر بعدين
+  items: CartItem[]; // ممكن تحدد شكل العناصر بعدين
   total: number;
   delivery_type: "pickup" | "delivery";
   address?: string | null;
