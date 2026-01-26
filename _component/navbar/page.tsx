@@ -94,8 +94,12 @@ const firstCategoryId = categories?.[0]?.id;
               </li>
               <li className="relative">
                 <Link
-                  href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}
-                  onClick={() => setOpen(false)}
+                  href={
+      firstCategoryId
+        ? `/menu?category=${firstCategoryId}`
+        : "/menu"
+    }
+    onClick={() => setOpen(false)}
                   className={`font-bold text-xl md:text-(--bg-color) text-(--main-color) ${
                     scrollPosition > 50
                       ? "md:text-(--main-color) hover:text-(--text-color)"

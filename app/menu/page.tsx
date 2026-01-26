@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import Loading from "@/_component/loading/page";
 import { Category } from "@/types/category";
 import useTranslation from "@/hooks/useTranslation";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
@@ -26,9 +27,10 @@ const { t } = useTranslation();
 const lang = useSelector((state: RootState) => state.language.lang);
 const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-   
+     const searchParams = useSearchParams();
+const categoryFromUrl = searchParams.get("category");
   const dispatch = useDispatch<AppDispatch>();
-
+ const router = useRouter();
 
   const { data: categories } = useSelector(
     (state: RootState) => state.categories
@@ -37,35 +39,27 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   const { products, loading } = useSelector(
     (state: RootState) => state.products
   );
+ 
+  const activeCategoryId = useMemo(() => {
+  if (searchParams.get("category")) {
+    return searchParams.get("category");
+  }
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  if (categories?.length) {
+    return categories[0].id.toString();
+  }
 
-  const searchParams = useSearchParams();
-const categoryFromUrl = searchParams.get("category");
+  return null;
+}, [searchParams, categories]);
+
+
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchProducts());
   }, [dispatch]);
 
-useEffect(() => {
-  if (categories?.length && !activeCategoryId) {
-    setActiveCategoryId(categories[0].id.toString());
-  }
-}, [categories, activeCategoryId]);
 
-  // const activeTabId = useMemo(() => {
-  //   if (!categories?.length) return null;
-  //   return id ?? categories[0].id.toString();
-  // }, [id, categories]);
-
-useEffect(() => {
-  if (categoryFromUrl) {
-    setActiveCategoryId(categoryFromUrl);
-  } else if (categories?.length) {
-    setActiveCategoryId(categories[0].id.toString());
-  }
-}, [categoryFromUrl, categories]);
 
 
   const openModal = (item: Product) => {
@@ -115,7 +109,7 @@ useEffect(() => {
                   <li
                     key={item.id}
                     className="flex justify-center items-center gap-2 uppercase font-semibold text-[#3E445A] text-xl  px-3 py-2 md:py-3 cursor-pointer"
-                     onClick={() => setActiveCategoryId(item.id.toString())}
+                     onClick={() =>router.replace(`?category=${item.id}`, { scroll: false })}
 
                   >
                     <div
