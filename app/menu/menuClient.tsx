@@ -108,7 +108,7 @@ const categoryFromUrl = searchParams.get("category");
                 {categories?.map((item: Category) => (
                   <li
                     key={item.id}
-                    className="flex justify-center items-center gap-2 uppercase font-semibold text-[#3E445A] text-xl  px-3 py-2 md:py-3 cursor-pointer"
+                    className="flex justify-center items-center gap-2 uppercase font-semibold text-[#3E445A] text-xl  px-3 py-2 md:py-3 cursor-pointer select-none"
                      onClick={() =>router.replace(`?category=${item.id}`, { scroll: false })}
 
                   >
