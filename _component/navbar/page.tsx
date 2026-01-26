@@ -94,7 +94,7 @@ const firstCategoryId = categories?.[0]?.id;
               </li>
               <li className="relative">
                 <Link
-                  href={
+                  href={ 
       firstCategoryId
         ? `/menu?category=${firstCategoryId}`
         : "/menu"

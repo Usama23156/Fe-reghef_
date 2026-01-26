@@ -13,7 +13,7 @@ export default function OrderConfirmation() {
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
-      <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-md w-full">
+      <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-md w-full border border-(--bg-color)">
         <h1 className="text-2xl font-bold mb-4 text-(--text-color)">
           {t.orderDone}
         </h1>

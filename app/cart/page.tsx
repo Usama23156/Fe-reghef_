@@ -29,7 +29,11 @@ const Page = () => {
         <div className="pt-[50%] md:pt-40 text-mainColor text-center h-[85vh] mt-30">
           <h1 className="text-2xl sm:text-3xl text-black mb-8">{t["الكارت فاضي"]}</h1>
           <Link
-            href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}
+             href={ 
+      firstCategoryId
+        ? `/menu?category=${firstCategoryId}`
+        : "/menu"
+    }
             className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer"
           >
              {t["اطلب الان"]}
@@ -59,7 +63,11 @@ const Page = () => {
                {t[" تاكيد الطلب"]}
             </button>
             <Link
-              href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}
+               href={ 
+      firstCategoryId
+        ? `/menu?category=${firstCategoryId}`
+        : "/menu"
+    }
               className="bg-(--bg-color) text-white py-2 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer"
             >
                {t[" ارجع للمنيو"]}
