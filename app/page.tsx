@@ -66,7 +66,7 @@ export default function Home() {
         </h2>
         <div className="flex justify-between py-5" dir="rtl">
           <div className="w-[35%] flex flex-col items-center justify-center gap-y-4">
-            <p className="text-4xl sm:text-5xl font-bold text-center text-(--text-color)">
+            <p className="text-4xl sm:text-5xl font-bold text-center text-(--text-color)" data-aos="fade-left">
              {t["home-cote"]}
             </p>
             {/* <Link href="menu"  className="text-4xl sm:text-5xl font-bold text-center text-(--text-color)">المنيو </Link> */}

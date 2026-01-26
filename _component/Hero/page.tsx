@@ -60,7 +60,11 @@ const firstCategoryId = categories?.[0]?.id;
                   <br />
                  {t.hero4}
                 </h1>
-                <Link href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}>
+                <Link href={ 
+      firstCategoryId
+        ? `/menu?category=${firstCategoryId}`
+        : "/menu"
+    }>
                 <button
                   className="bg-(--bg-color) text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
                   >
@@ -97,7 +101,11 @@ const firstCategoryId = categories?.[0]?.id;
                   <br />
                  {t.hero4}
                 </h1>
-                <Link href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}>
+                <Link href={ 
+      firstCategoryId
+        ? `/menu?category=${firstCategoryId}`
+        : "/menu"
+    }>
                 <button
                   className="bg-(--bg-color) text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
                   >

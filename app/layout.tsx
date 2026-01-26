@@ -30,7 +30,7 @@ export default function RootLayout({
         <Provider store={store}>
           <HtmlWrapper>
             <Navbar />
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider><main className="grow flex flex-col">{children}</main></AuthProvider>
             <Footer />
           </HtmlWrapper>
         </Provider>
