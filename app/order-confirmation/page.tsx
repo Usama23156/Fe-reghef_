@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import ClientOrderConfirmation from "@/_component/ClientOrderConfirmation/page";
 
