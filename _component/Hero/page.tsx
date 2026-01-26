@@ -7,18 +7,19 @@ import Link from 'next/link';
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
+import useTranslation from "@/hooks/useTranslation";
 import {  useSelector } from "react-redux";
 import type { RootState} from "@/store/store";
 
 const page = () => {
-
+   const { t } = useTranslation();
+const lang = useSelector((state: RootState) => state.language.lang);
   const categories = useSelector((state: RootState) => state.categories.data);
 const firstCategoryId = categories?.[0]?.id;
 
   return (
 
-    <div>
+    <div  dir="rtl">
       <div className='pt-16'>
      <div className="relative bg-linear-to-r overflow-hidden">
       <div className="w-screen h-1/2 mx-auto ">
@@ -44,26 +45,26 @@ const firstCategoryId = categories?.[0]?.id;
               />
             </div>
 
-            <div className="relative z-10 container mx-auto h-full flex items-center py-12 px-12 sm:px-12 lg:px-20">
+            <div className="relative z-10 container mx-auto h-full flex items-center py-12 px-12 sm:px-12 lg:px-20" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
               <div className="max-w-xl">
                 <div className="mb-4 ">
                   <span className="inline-block bg-white/20 text-white text-sm px-3 py-1 rounded-full">
-                    عرض حصري
+                   {t.hero1}
                   </span>
                   <span className="inline-block bg-(--bg-color) text-white text-sm px-3 py-1 rounded-full ml-2">
-                    20% خصم
+                    {t.hero2}
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 ">
-                  فقط علي
+                 {t.hero3}
                   <br />
-                  طلبات الاونلاين
+                 {t.hero4}
                 </h1>
                 <Link href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}>
                 <button
                   className="bg-(--bg-color) text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
                   >
-                 اطلب الان
+                {t["اطلب الان"]}
                 </button>
                 </Link>
               </div>
@@ -81,26 +82,26 @@ const firstCategoryId = categories?.[0]?.id;
               <div className="absolute inset-0 bg-black/20"></div>
             </div>
 
-            <div className="relative z-10 container mx-auto h-full flex items-center py-12 px-12 sm:px-12 lg:px-20">
+            <div className="relative z-10 container mx-auto h-full flex items-center py-12 px-12 sm:px-12 lg:px-20" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
               <div className="max-w-xl">
                 <div className="mb-4">
                   <span className="inline-block bg-white/20 text-white text-sm px-3 py-1 rounded-full">
-                    عرض حصري
+                   {t.hero1}
                   </span>
                   <span className="inline-block bg-(--bg-color) text-white text-sm px-3 py-1 rounded-full ml-2">
-                    20% خصم
+                    {t.hero2}
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-                 فقط علي
+                {t.hero3}
                   <br />
-                  طلبات الاونلاين
+                 {t.hero4}
                 </h1>
                 <Link href={firstCategoryId ? `/menu/${firstCategoryId}` : "/menu"}>
                 <button
                   className="bg-(--bg-color) text-white px-6 py-3 rounded-lg font-medium transition-colors cursor-pointer"
                   >
-                  اطلب الان 
+                 {t["اطلب الان"]}
                 </button>
                 </Link>
               </div>

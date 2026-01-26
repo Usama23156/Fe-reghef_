@@ -7,6 +7,7 @@ import type { AppDispatch } from "@/store/store";
 import { setUser } from "@/store/authSlice";
 import { setCart } from "@/store/cartSlice";
 import { supabase } from "@/api/client";
+import useTranslation from "@/hooks/useTranslation";
 
 interface FormFields {
   name: string;
@@ -19,7 +20,7 @@ interface FormFields {
 export default function SignupPage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-
+  const { t } = useTranslation();
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
@@ -87,53 +88,53 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center px-4 pt-24">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-(--bg-color) my-8">
         <h2 className="text-2xl font-bold text-center text-(--text-color) mb-6">
-          تسجيل حساب جديد
+            {t.signupTitle}
         </h2>
 
         <div className="space-y-4">
           <div className="flex flex-col">
-          <label htmlFor="name" className="text-(--text-color)">الاسم</label>
+          <label htmlFor="name" className="text-(--text-color)">{t.الاسم}</label>
           <input
             name="name"
-            placeholder="الاسم"
+            placeholder={t.الاسم}
             onChange={handleChange}
             className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
             />
             </div>
             <div className="flex flex-col">
-          <label htmlFor="phone" className="text-(--text-color)">رقم الموبايل</label>
+          <label htmlFor="phone" className="text-(--text-color)"> {t.الموبايل}</label>
           <input
             name="phone"
-            placeholder="رقم الموبايل"
+            placeholder={t.الموبايل}
             onChange={handleChange}
             className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />
           </div>
           <div className="flex flex-col">
-          <label htmlFor="email" className="text-(--text-color)">الإيميل</label>
+          <label htmlFor="email" className="text-(--text-color)"> {t.الاميل} </label>
           <input
             name="email"
-            placeholder="الإيميل"
+            placeholder={t.الاميل}
             onChange={handleChange}
             className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />
           </div>
           <div className="flex flex-col">
-          <label htmlFor="password" className="text-(--text-color)"> كلمة السر</label>
+          <label htmlFor="password" className="text-(--text-color)"> {t.password}</label>
           <input
             type="password"
             name="password"
-            placeholder="كلمة السر"
+            placeholder={t.password}
             onChange={handleChange}
             className="input input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />  
           </div>
           <div className="flex flex-col">
-          <label htmlFor="rePassword" className="text-(--text-color)">إعادة كلمة السر</label>
+          <label htmlFor="rePassword" className="text-(--text-color)"> {t.repassword} </label>
           <input
             type="password"
             name="rePassword"
-            placeholder="إعادة كلمة السر"
+            placeholder={t.repassword}
             onChange={handleChange}
             className="input input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />
@@ -141,13 +142,13 @@ export default function SignupPage() {
         </div>
 
         <button onClick={handleSubmit} className="btn-main mt-6 bg-(--bg-color) p-2 rounded-2xl w-full cursor-pointer">
-          تسجيل حساب
+           {t.supmit}
         </button>
 
         <p className="text-center text-sm mt-4 text-(--text-color)">
-          لديك حساب؟{" "}
+         {t["signup-cote"]}
           <a href="/login" className="text-(--bg-color) cursor-pointer">
-            سجل دخول
+             {t.login}
           </a>
         </p>
       </div>

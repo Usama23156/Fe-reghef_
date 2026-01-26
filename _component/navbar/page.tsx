@@ -5,12 +5,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import CartIcon from "@/_component/cartIcon/page";
 import Login from "@/_component/login/page";
-import {  useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState} from "@/store/store";
+import { setLanguage } from "@/store/languageSlice";
+import useTranslation from "@/hooks/useTranslation";
+
 const page = () => {
+
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const lang = useSelector((state: RootState) => state.language.lang);
   const [scrollPosition, setscrollPosition] = useState(0);
   const [isVisible, setisVisible] = useState(true);
   const [open, setOpen] = useState(false);
+  
 
   const categories = useSelector((state: RootState) => state.categories.data);
 const firstCategoryId = categories?.[0]?.id;
@@ -81,7 +89,7 @@ const firstCategoryId = categories?.[0]?.id;
                       : "md:text-(--bg-color) hover:md:text-(--text-color) hover:text-(--text-color)"
                   }`}
                 >
-                  الرئيسية
+                 {t. الرئيسية}
                 </Link>{" "}
               </li>
               <li className="relative">
@@ -94,7 +102,7 @@ const firstCategoryId = categories?.[0]?.id;
                       : "md:text-(--bg-color) hover:md:text-(--text-color) hover:text-(--text-color)"
                   }`}
                 >
-                  المنيو
+                 {t.المنيو}
                 </Link>{" "}
               </li>
               <li className="relative">
@@ -107,7 +115,7 @@ const firstCategoryId = categories?.[0]?.id;
                       : "md:text-(--bg-color) hover:md:text-(--text-color) hover:text-(--text-color)"
                   }`}
                 >
-                  تواصل معنا
+                  {t["تواصل معنا"]}
                 </Link>{" "}
               </li>
               <li className="relative">
@@ -121,7 +129,7 @@ const firstCategoryId = categories?.[0]?.id;
                   }`}
                 >
                   {" "}
-                  من نحن
+                   {t["من نحن"]}
                 </Link>{" "}
               </li>
             </ul>
@@ -130,11 +138,14 @@ const firstCategoryId = categories?.[0]?.id;
             <CartIcon />
             <Login />
             <div>
-              <h6 className={` md:text-(--bg-color) text-(--bg-color) cursor-pointer ${
+              <h6 onClick={() =>
+        dispatch(setLanguage(lang === "ar" ? "en" : "ar"))
+      }
+              className={` md:text-(--bg-color) text-(--bg-color) cursor-pointer ${
                     scrollPosition > 50
                       ? "text-(--main-color) md:text-(--main-color) hover:text-(--text-color)"
                       : "md:text-(--bg-color) hover:md:text-(--text-color) hover:text-(--text-color)"
-                  }`}>ENG</h6>
+                  }`} >{lang === "ar" ? "ENG" : "عربي"}</h6>
             </div>
           </div>
         </div>

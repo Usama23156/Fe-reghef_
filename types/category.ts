@@ -1,6 +1,7 @@
 export interface Category {
   id: string
-  name: string
+  name_ar: string
+  name_en: string
    image?: string
 }
 

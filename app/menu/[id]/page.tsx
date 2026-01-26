@@ -8,13 +8,13 @@ import type { RootState, AppDispatch } from "@/store/store";
 import { useParams } from "next/navigation";
 import Loading from "@/_component/loading/page";
 import { Category } from "@/types/category";
-import { product } from "@/types/products";
 import { useRouter } from "next/navigation";
-
+import useTranslation from "@/hooks/useTranslation";
 
 interface Product {
   id: number;
-  name: string;
+  name_ar: string;
+  name_en: string;
   price: number;
   image: string;
   category_id: string;
@@ -23,8 +23,8 @@ interface Product {
 export const dynamic = "force-dynamic";
 
  const Page = () => {
-
-
+const { t } = useTranslation();
+const lang = useSelector((state: RootState) => state.language.lang);
 const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const router = useRouter();
@@ -94,7 +94,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         <div className="flex md:relative left-0 w-full h-auto lg:flex flex-col md:flex-row items-center md:justify-center">
           <div className=" py-4 md:py-7 flex flex-col lg:flex-row w-full justify-between items-start lg:items-center gap-4 xl:px-37.5">
             <div className="w-full ">
-              <ul className="flex flex-row justify-center items-start lg:items-center gap-2 md:gap-0 mt-5 lg:mt-0  md:pl-0">
+              <ul className="flex flex-row justify-center items-start lg:items-center md:gap-0 mt-5 lg:mt-0  md:pl-0">
                 {categories?.map((item: Category) => (
                   <li
                     key={item.id}
@@ -104,11 +104,12 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                     <div
                       className={`${
                         activeTabId === item.id.toString()
-                          ? "text-(--bg-color) font-bold  "
+                          ? "text-(--bg-color) "
                           : ""
                       }`}
                     >
-                      {item.name}
+                      {/* {item.name_ar} */}
+                      {lang === "ar" ? item.name_ar : item.name_en}
                     </div>
                   </li>
                 ))}
@@ -130,14 +131,14 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                   <div className="aspect-square w-36 h-24 rounded-lg rounded-b-none mb-3 overflow-hidden flex items-center justify-center">
                     <img
                       src={item.image}
-                      alt={item.name} // Use item.name for better accessibility
+                      alt={item.name_en} // Use item.name for better accessibility
                       className="object-contain"
                     />
                   </div>
                 </div>
                 <div className="px-5 pt-0">
                   <h3 className="text-xl font-medium text-black ">
-                    {item.name}
+                    {lang === "ar" ? item.name_ar : item.name_en}
                   </h3>
                   <span className="text-[13px] text-black">
                     {item.price} 
@@ -145,7 +146,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                 </div>
                 <div className="flex justify-center items-center mb-2 mt-2">
                   <button className="bg-(--bg-color) text-white py-1 text-center hover:bg-red-800 transition-all duration-200 rounded-3xl px-3 cursor-pointer">
-                    اضف الي السله
+                    {t.add}
                   </button>
                 </div>
               </div>

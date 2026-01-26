@@ -7,17 +7,21 @@ import { setCart, cleanUpCart, saveCartToUser } from "@/store/cartSlice";
 import type { CartItem } from "@/store/cartSlice";
 import type { RootState, AppDispatch } from "@/store/store";
 import { generateOrderNumber } from "@/lib/generateOrderNumber";
+import useTranslation from "@/hooks/useTranslation";
 
 type DeliveryType = "pickup" | "delivery";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-
+ const { t ,lang} = useTranslation();
   // Cart from Redux
   const reduxCart: CartItem[] = useSelector(
     (state: RootState) => state.cart.products
   );
+
+
+
 
   // Hydration-safe cart state
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
@@ -40,10 +44,23 @@ export default function CheckoutPage() {
   // Delivery / Pickup state
   const [deliveryType, setDeliveryType] = useState<DeliveryType>("pickup");
   const [selectedBranch, setSelectedBranch] = useState("");
-  const branches = [
-    { id: "branch-1", name: "فرع سان جوزيف" },
-    { id: "branch-2", name: "فرع الجولي فيل" },
-  ];
+ const branches = [
+  {
+    id: "branch-1",
+    name: {
+      ar: "فرع سان جوزيف",
+      en: "Saint Joseph Branch",
+    },
+  },
+  {
+    id: "branch-2",
+    name: {
+      ar: "فرع الجولي فيل",
+      en: "Jolly Ville Branch",
+    },
+  },
+];
+
 
   // Delivery form state (Unified for pickup & delivery)
   const [deliveryForm, setDeliveryForm] = useState({
@@ -72,65 +89,63 @@ export default function CheckoutPage() {
   );
 
   // Delivery validation
-  const isDeliveryValid =
-    deliveryForm.name && deliveryForm.phone && deliveryForm.address;
+   const isPickupValid =
+  deliveryForm.name.trim() !== "" &&
+  deliveryForm.phone.trim() !== "" &&
+  selectedBranch !== "";
 
-  // const selectedBranch =
-  //   pickupForm.name && pickupForm.phone ;
+const isDeliveryValid =
+  deliveryForm.name .trim() !== "" &&
+  deliveryForm.phone.trim() !== "" &&
+  deliveryForm.address.trim() !== "";
+
+ 
 
   // Confirm Order
 const handleConfirmOrder = async () => {
   if (cartItems.length === 0) return;
 
+  if (deliveryType === "pickup" && !isPickupValid) {
+    alert(t.pickupRequired);
+    return;
+  }
+
   if (deliveryType === "delivery" && !isDeliveryValid) {
-    alert("اكمل بيانات الدليفري");
+    alert(t.deliveryRequired);
     return;
   }
-
-  if (deliveryType === "pickup" && !selectedBranch) {
-    alert("اختر الفرع");
-    return;
-  }
-
 
   try {
-    // 1️⃣ إنشاء الطلب في Supabase
     const res = await fetch("/api/create-order", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    order_number: generateOrderNumber(),
-    user_id: user?.id || null,
-    customer_name: deliveryForm.name,
-    customer_phone: deliveryForm.phone,
-    items: cartItems,
-    total: totalPrice,
-    delivery_type: deliveryType,
-    address: deliveryType === "delivery" ? deliveryForm.address : null,
-    branch: deliveryType === "pickup" ? selectedBranch : null,
-    status: "pending",
-  }),
-});
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order_number: generateOrderNumber(),
+        user_id: user?.id || null,
+        customer_name: deliveryForm.name,
+        customer_phone: deliveryForm.phone,
+        items: cartItems,
+        total: totalPrice,
+        delivery_type: deliveryType,
+        address: deliveryType === "delivery" ? deliveryForm.address : null,
+        branch: deliveryType === "pickup" ? selectedBranch : null,
+        status: "pending",
+      }),
+    });
 
-const newOrder = await res.json();
+    const newOrder = await res.json();
 
-
-
-    // 2️⃣ مسح الكارت
     dispatch(cleanUpCart());
     localStorage.removeItem("cart");
 
-    // 3️⃣ فتح صفحة التأكيد مع تمرير البيانات
-   const queryString = new URLSearchParams({
-  orderNumber: newOrder.order_number,
-}).toString();
-
-router.push(`/order-confirmation?${queryString}`);
-  } catch (error) {
-    
-    alert("حصل خطأ أثناء تأكيد الطلب");
+    router.push(
+      `/order-confirmation?orderNumber=${newOrder.order_number}`
+    );
+  } catch {
+    alert(t.orderError);
   }
 };
+
 
 
   return (
@@ -138,7 +153,7 @@ router.push(`/order-confirmation?${queryString}`);
 
       {/* Delivery / Pickup */}
       <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
-        <h2 className="text-lg font-semibold mb-3 text-(--text-color)">طريقة الاستلام</h2>
+        <h2 className="text-lg font-semibold mb-3 text-(--text-color)"> {t["طريقة الاستلام"]}</h2>
         <div className="flex gap-4">
           <button
             onClick={() => setDeliveryType("pickup")}
@@ -148,7 +163,7 @@ router.push(`/order-confirmation?${queryString}`);
                 : "text-(--text-color)"
             }`}
           >
-            استلام من الفرع
+           {t.pickup}
           </button>
           <button
             onClick={() => setDeliveryType("delivery")}
@@ -158,7 +173,7 @@ router.push(`/order-confirmation?${queryString}`);
                 : "text-(--text-color)"
             }`}
           >
-            دليفري
+           {t.delivery}
           </button>
         </div>
       </div>
@@ -166,11 +181,11 @@ router.push(`/order-confirmation?${queryString}`);
       {/* Pickup branch */}
       {deliveryType === "pickup" && (
         <div className="bg-white rounded-xl p-4 shadow space-y-4 border border-(--bg-color)">
-          <h2 className="text-lg font-semibold text-(--text-color)">بيانات الاستلام</h2>
+          <h2 className="text-lg font-semibold text-(--text-color)"> {t["بيانات الاستلام"]}</h2>
           <input
             type="text"
             name="name"
-            placeholder="الاسم"
+            placeholder={t.الاسم}
             value={deliveryForm.name}
             onChange={handleDeliveryChange}
             className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
@@ -178,22 +193,22 @@ router.push(`/order-confirmation?${queryString}`);
           <input
             type="tel"
             name="phone"
-            placeholder="رقم الموبايل"
+            placeholder={t.الموبايل}
             value={deliveryForm.phone}
             onChange={handleDeliveryChange}
             className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
           />
           <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
-            <h2 className="text-lg font-semibold mb-3 text-(--text-color)">اختر الفرع</h2>
+            <h2 className="text-lg font-semibold mb-3 text-(--text-color)">{t.selectBranch} </h2>
             <select
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
               className="w-full rounded-lg px-3 py-2 border border-(--bg-color) text-(--text-color)"
             >
-              <option value="">-- اختر الفرع --</option>
+              <option value="">-- {t.selectBranch}--</option>
               {branches.map((branch) => (
                 <option key={branch.id} value={branch.id}>
-                  {branch.name}
+                  {branch.name[lang]}
                 </option>
               ))}
             </select>
@@ -204,11 +219,11 @@ router.push(`/order-confirmation?${queryString}`);
       {/* Delivery form */}
       {deliveryType === "delivery" && (
         <div className="bg-white rounded-xl p-4 shadow space-y-4 border border-(--bg-color)">
-          <h2 className="text-lg font-semibold text-(--text-color)">بيانات الدليفري</h2>
+          <h2 className="text-lg font-semibold text-(--text-color)"> {t["بيانات الدليفري"]}</h2>
           <input
             type="text"
             name="name"
-            placeholder="الاسم"
+            placeholder={t.الاسم}
             value={deliveryForm.name}
             onChange={handleDeliveryChange}
             className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
@@ -216,14 +231,14 @@ router.push(`/order-confirmation?${queryString}`);
           <input
             type="tel"
             name="phone"
-            placeholder="رقم الموبايل"
+            placeholder={t.الموبايل}
             value={deliveryForm.phone}
             onChange={handleDeliveryChange}
             className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
           />
           <textarea
             name="address"
-            placeholder="العنوان بالكامل"
+            placeholder={t.address}
             value={deliveryForm.address}
             onChange={handleDeliveryChange}
             className="w-full border rounded-lg px-3 py-2 border-(--bg-color) text-(--text-color)"
@@ -234,30 +249,30 @@ router.push(`/order-confirmation?${queryString}`);
 
       {/* Order Summary */}
       <div className="bg-white rounded-xl p-4 shadow border border-(--bg-color)">
-        <h2 className="text-lg font-semibold mb-3 text-(--text-color)">ملخص الطلب</h2>
+        <h2 className="text-lg font-semibold mb-3 text-(--text-color)">{t["ملخص الطلب"]} </h2>
         <ul className="space-y-2 text-(--text-color)">
           {cartItems.map((item) => (
             <li key={`${item.product.id}-${JSON.stringify(item.details)}`}>
-              {item.product.name} × {item.count} = {item.totalPrice.toFixed(2)} جنيه
+              {lang === "ar" ? item.product.name_ar : item.product.name_en} × {item.count} = {item.totalPrice.toFixed(2)} {t.EGP}
             </li>
           ))}
         </ul>
         <hr className="my-3" />
-        <p className="text-(--text-color)">عدد المنتجات: {totalItems}</p>
-        <p className="font-bold text-(--text-color)">الإجمالي: {totalPrice.toFixed(2)} جنيه</p>
+        <p className="text-(--text-color)">{t.TI} : {totalItems}</p>
+        <p className="font-bold text-(--text-color)">{t.المجموع}: {totalPrice.toFixed(2)} {t.EGP}</p>
       </div>
 
       {/* Confirm Order button */}
       <button
         onClick={handleConfirmOrder}
         disabled={
-          !deliveryType ||
-          (deliveryType === "pickup" && !selectedBranch) ||
-          (deliveryType === "delivery" && !isDeliveryValid)
-        }
+    deliveryType === "pickup"
+      ? !isPickupValid
+      : !isDeliveryValid
+  }
         className="w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold disabled:opacity-50 cursor-pointer"
       >
-        تأكيد الطلب
+       {t.confirmOrder}
       </button>
     </div>
   );

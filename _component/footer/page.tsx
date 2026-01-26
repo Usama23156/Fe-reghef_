@@ -2,8 +2,12 @@
 import Link from 'next/link';
 import { IoIosCall } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
+import useTranslation from "@/hooks/useTranslation";
 
  const page = () => {
+
+    const { t } = useTranslation();
+  
   return (
     <div className='bg-(--bg-color) w-full'>
     <div className="flex items-center justify-between max-w-full mx-auto px-6 py-3  lg:px-16 ">
@@ -12,15 +16,15 @@ import { FaLocationDot } from "react-icons/fa6";
       </Link>
       <div>
         <div className='flex items-center justify-between'>
-        <h5 className='text-(--main-color) font-bold text-xl'>فروعنا</h5>
+        <h5 className='text-(--main-color) font-bold text-xl'>{t.فروعنا}</h5>
          <FaLocationDot />
         </div>
-        <p className='text-(--main-color)'>طريق الجولي فيل</p>
-        <p className='text-(--main-color)'>شارع سان جوزيف</p>
+        <p className='text-(--main-color)'>{t.loc1}</p>
+        <p className='text-(--main-color)'>{t.loc2} </p>
       </div>
       <div>
         <div className='flex items-center justify-between'>
-        <h5 className='text-(--main-color) font-bold text-xl'>تواصل معانا</h5>
+        <h5 className='text-(--main-color) font-bold text-xl'>{t["تواصل معنا"]}</h5>
         <IoIosCall />
         </div>
         <p className='text-(--main-color)'>01040145657</p>

@@ -1,5 +1,5 @@
 "use client";
-
+import useTranslation from "@/hooks/useTranslation";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart } from "@/store/cartSlice";
@@ -7,7 +7,8 @@ import { addCart } from "@/store/cartSlice";
 interface Product {
   id: number;
   image: string;
-  name: string;
+  name_ar: string;
+  name_en: string;
   price: number;
   box_size?: number; // 1, 4, 8, 10
 }
@@ -30,7 +31,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, product }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: any) => state.cart.products);
   const [quantity, setQuantity] = useState<number>(0);
-
   const [boxItems, setBoxItems] = useState<BoxItems>({
     kofta: 0,
     shish: 0,
@@ -66,7 +66,7 @@ const canAddToCart = isBox
     [item]: boxItems[item] + 1,
   });
 };
-
+const { lang ,t} = useTranslation();
 const decreaseItem = (item: BoxItemKey) => {
   if (boxItems[item] <= 0) return;
 
@@ -76,10 +76,22 @@ const decreaseItem = (item: BoxItemKey) => {
   });
 };
 
-  const boxItemsLabels: Record<BoxItemKey, string> = {
-  kofta: "كفتة",
-  shish: "شيش",
-  hawawshi: "حواوشي",
+const boxItemsLabels: Record<
+  BoxItemKey,
+  { ar: string; en: string }
+> = {
+  kofta: {
+    ar: "كفتة",
+    en: "Kofta",
+  },
+  shish: {
+    ar: "شيش",
+    en: "Shish",
+  },
+  hawawshi: {
+    ar: "حواوشي",
+    en: "Hawawshi",
+  },
 };
 
 const addToCart = () => {
@@ -134,13 +146,13 @@ const addToCart = () => {
           <div className="md:flex gap-x-5 items-center pt-2 pb-4 px-3">
             <img
               src={product.image}
-              alt={product.name}
+              alt={product.name_en}
               className="rounded-lg w-72 lg:max-w-60 m-auto"
             />
             <div className="mt-4 md:mt-0 space-y-4">
               <div className="flex justify-between">
                 <h2 className="text-base font-semibold text-center text-(--main-color)">
-                  {product.name}
+                  {lang === "ar" ? product.name_ar : product.name_en}
                 </h2>
                 <p className="text-base max-w-72 font-semibold text-(--main-color)">
                   {product.price}
@@ -148,15 +160,15 @@ const addToCart = () => {
               </div>
               {isBox ? (
                 <div className="box-selection mt-4">
-                  <h3 className="font-bold mb-2">اختار مكونات البوكس</h3>
+                  <h3 className="font-bold mb-2"> {t["popp-cote"]}</h3>
                   {(["kofta", "shish", "hawawshi"] as BoxItemKey[]).map(
                     (item) => (
                       <div
                         key={item}
                         className="flex justify-between items-center mb-2"
                       >
-                        <span>{boxItemsLabels[item]}</span>
-                       <div className="flex items-center gap-4 bg-[#F3F5F9] rounded p-1">
+                        <span>{boxItemsLabels[item][lang]}</span>
+                       <div className="flex items-center gap-2 bg-[#F3F5F9] rounded p-1">
   <button
     onClick={() => increaseItem(item)}
     className="w-8 h-8 text-lg rounded cursor-pointer text-black"
@@ -182,7 +194,7 @@ const addToCart = () => {
                   )}
                   {product.box_size && totalBox !== product.box_size && (
                     <p className="text-(--main-color) text-sm mt-1">
-                      لازم تختار {product.box_size} ساندوتش بالظبط
+                       {t.box1}{product.box_size} {t.box2} 
                     </p>
                   )}
                 </div>
@@ -214,7 +226,7 @@ const addToCart = () => {
                     disabled={!canAddToCart}
                     className="bg-(--main-color) text-(--text-color) py-2 rounded-lg cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    اضف الي السله
+                     {t.add} 
                   </button>
                 </div>
               </div>

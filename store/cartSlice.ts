@@ -3,7 +3,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface Product {
   id: number;
   image: string;
-  name: string;
+  name_ar: string;
+  name_en: string;
   price: number;
   box_size?: number;
 }

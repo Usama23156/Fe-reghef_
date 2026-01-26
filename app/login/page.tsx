@@ -7,11 +7,12 @@ import type { AppDispatch } from "@/store/store";
 import { setUser } from "@/store/authSlice";
 import { setCart } from "@/store/cartSlice";
 import { supabase } from "@/api/client";
+import useTranslation from "@/hooks/useTranslation";
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-
+  const { t } = useTranslation();
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
@@ -65,24 +66,24 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4 pt-24">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-(--bg-color)">
         <h2 className="text-2xl font-bold text-center text-(--text-color) mb-6">
-          تسجيل الدخول
+          {t.login} 
         </h2>
 
         <div className="space-y-4">
           <div className="flex flex-col">
-          <label htmlFor="email" className="text-(--text-color)">الإيميل</label>
+          <label htmlFor="email" className="text-(--text-color)">{t.الاميل}</label>
           <input
-            placeholder="الإيميل"
+            placeholder={t.الاميل}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
           />
         </div>
         <div className="flex flex-col">
-          <label htmlFor="password" className="text-(--text-color)"> كلمة السر</label>
+          <label htmlFor="password" className="text-(--text-color)">{t.password}</label>
           <input
             type="password"
-            placeholder="كلمة السر"
+            placeholder={t.password}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="input text-(--text-color) border border-(--bg-color) px-3 bg-gray-100 p-1 rounded-xl"
@@ -91,13 +92,13 @@ export default function LoginPage() {
         </div>
 
         <button onClick={handleLogin} className="btn-main mt-6 bg-(--bg-color) p-2 rounded-2xl w-full cursor-pointer">
-          دخول
+          {t.supmit}
         </button>
 
         <p className="text-center text-sm mt-4 text-(--text-color)">
-          ليس لديك حساب؟{" "}
+                  {t["login-cote"]}
           <a href="/signUp" className="text-(--bg-color) cursor-pointer">
-            سجل الآن
+           {t["signup-now"]}
           </a>
         </p>
       </div>

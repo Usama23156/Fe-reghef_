@@ -6,6 +6,8 @@ import { supabase } from "@/api/client";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
+import useTranslation from "@/hooks/useTranslation";
+
 
 function UserMenu() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,8 +15,9 @@ function UserMenu() {
   const [isVisible, setIsVisible] = useState(true);
   const [User, setUser] = useState<any>(null);
   const user = useSelector((state: RootState) => state.auth.user);
-  
+  const { t } = useTranslation(); 
   const router = useRouter();
+  const lang = useSelector((state: RootState) => state.language.lang);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,7 +59,12 @@ function UserMenu() {
         <FaRegCircleUser />
       </button>
 
-      <div className={`absolute left-6 md:left-12 mt-2 w-44 bg-(--bg-color) border border-(--text-color) shadow-lg rounded z-50 text-center transition-all duration-200 ${dropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
+      <div  className={`
+    absolute mt-2 w-44 bg-(--bg-color) border border-(--text-color)
+    shadow-lg rounded z-50 text-center transition-all duration-200
+    ${lang === "ar" ? "left-6 md:left-12" : "right-6 md:right-12"}
+    ${dropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}
+  `}>
         {!User ? (
           <>
             <Link
@@ -64,7 +72,7 @@ function UserMenu() {
               onClick={() => setDropdownOpen(false)}
               className="block px-4 py-2 hover:bg-red-800 text-(--main-color)"
             >
-              تسجيل دخول
+             {t.login}
             </Link>
 
             <Link
@@ -72,7 +80,7 @@ function UserMenu() {
               onClick={() => setDropdownOpen(false)}
               className="block px-4 py-2 hover:bg-red-800 text-(--main-color)"
             >
-              إنشاء حساب
+             {t.signup}
             </Link>
           </>
         ) : (
@@ -82,14 +90,14 @@ function UserMenu() {
               onClick={() => setDropdownOpen(false)}
               className="block px-4 py-2 hover:bg-red-800 text-(--main-color)"
             >
-              طلباتي السابقة
+             {t.history}
             </Link>
 
             <button
               onClick={handleLogout}
               className="w-full px-4 py-2 hover:bg-red-800 text-(--main-color) cursor-pointer"
             >
-              تسجيل خروج
+             {t.logout}
             </button>
           </>
         )}
