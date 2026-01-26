@@ -1,12 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+
 import useTranslation from "@/hooks/useTranslation";
 
-export default function OrderConfirmation() {
+export default function OrderConfirmation({ searchParams }: { searchParams: { orderNumber?: string } }) {
   const { t, lang } = useTranslation();
-  const params = useSearchParams();
-  const order = params.get("orderNumber") || "غير محدد";
+ 
+  const order = searchParams.orderNumber|| "غير محدد";
 
   return (
     <div className="flex items-center justify-center min-h-screen text-center px-4">
