@@ -7,13 +7,9 @@ import useTranslation from "@/hooks/useTranslation";
 export default function OrderConfirmation() {
   const { t, lang } = useTranslation();
   const params = useSearchParams();
-  const [orderNumber, setOrderNumber] = useState<string>("غير محدد");
+  const orderNumber = params.get("orderNumber") || "غير محدد";
 
-  // Safely get order number after client hydration
-  useEffect(() => {
-    const order = params.get("orderNumber");
-    if (order) setOrderNumber(order);
-  }, [params]);
+ 
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
