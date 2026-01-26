@@ -112,8 +112,8 @@ const categoryFromUrl = searchParams.get("category");
                      onClick={() =>router.replace(`?category=${item.id}`, { scroll: false })}
 
                   >
-                    <div
-                      className={`${
+                    <p
+                      className={`select-none ${
                         activeCategoryId === item.id.toString()
                           ? "text-(--bg-color) "
                           : "text-(--text-color) hover:text-(--bg-color)"
@@ -121,7 +121,7 @@ const categoryFromUrl = searchParams.get("category");
                     >
                       {/* {item.name_ar} */}
                       {lang === "ar" ? item.name_ar : item.name_en}
-                    </div>
+                    </p>
                   </li>
                 ))}
               </ul>
