@@ -31,12 +31,10 @@ const [animate, setAnimate] = useState(false);
     // تهيئة AOS
     AOS.init({ once: true });
 
-    // التحقق إذا أول مرة يفتح الموقع
-    const hasVisited = sessionStorage.getItem("visited");
-    if (!hasVisited) {
+   
       setAnimate(true);
-      sessionStorage.setItem("visited", "true");
-    }
+      
+    
   }, []);
 
 
@@ -63,15 +61,15 @@ const [animate, setAnimate] = useState(false);
             scrollPosition > 50 ? "bg-(--bg-color)" : "bg-white"
           }`}
         >
-          <Link
-      href="/"
-      data-aos={animate ? "flip-right" : undefined}
-      data-aos-delay={animate ? "100" : undefined}
-      data-aos-duration={animate ? "1000" : undefined}
-      className={`text-[1.1rem] font-semibold flex items-center gap-x-2 ${
-        scrollPosition > 50 ? "text-(--text-color)" : "text-(--bg-color)"
-      }`}
-    >
+       <Link
+        href="/"
+  data-aos="flip-right"
+  data-aos-once="true"   // هنا بتخليها تعمل animation مرة واحدة فقط
+  data-aos-duration="1000" // مدة الانيميشن
+  className={`text-[1.1rem] font-semibold flex items-center gap-x-2 ${
+    scrollPosition > 50 ? "text-(--text-color)" : "text-(--bg-color)"
+  }`}
+>
             <img src="/logo.jpg" alt="" className=" max-w-25 rounded-xl " />
           </Link>
           <div
