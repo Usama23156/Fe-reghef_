@@ -147,7 +147,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm mt-4 text-(--text-color)">
          {t["signup-cote"]}
-          <a href="/login" className="text-(--bg-color) cursor-pointer">
+          <a  onClick={() => router.push("/login")} className="text-(--bg-color) cursor-pointer">
              {t.login}
           </a>
         </p>

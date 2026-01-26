@@ -75,7 +75,7 @@ export default function Home() {
             {categories.length > 0 && categories.map((category) => (
               <div key={category.id}>
                 <Link
-                  href={`/menu/${category.id}`}
+                  href={`/menu?category=${category.id}`}
                   className="rounded-lg p-4 text-center  "
                 >
                   {category.image && (

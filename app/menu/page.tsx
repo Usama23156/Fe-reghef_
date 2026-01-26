@@ -5,10 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "@/store/productsSlice";
 import { fetchCategories } from "@/store/categorySlice";
 import type { RootState, AppDispatch } from "@/store/store";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Loading from "@/_component/loading/page";
 import { Category } from "@/types/category";
-import { useRouter } from "next/navigation";
 import useTranslation from "@/hooks/useTranslation";
 
 interface Product {
@@ -27,7 +26,7 @@ const { t } = useTranslation();
 const lang = useSelector((state: RootState) => state.language.lang);
 const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const router = useRouter();
+   
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -38,19 +37,35 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   const { products, loading } = useSelector(
     (state: RootState) => state.products
   );
-  const params = useParams();
 
-  const id = params.id as string;
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+const categoryFromUrl = searchParams.get("category");
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const activeTabId = useMemo(() => {
-    if (!categories?.length) return null;
-    return id ?? categories[0].id.toString();
-  }, [id, categories]);
+useEffect(() => {
+  if (categories?.length && !activeCategoryId) {
+    setActiveCategoryId(categories[0].id.toString());
+  }
+}, [categories, activeCategoryId]);
+
+  // const activeTabId = useMemo(() => {
+  //   if (!categories?.length) return null;
+  //   return id ?? categories[0].id.toString();
+  // }, [id, categories]);
+
+useEffect(() => {
+  if (categoryFromUrl) {
+    setActiveCategoryId(categoryFromUrl);
+  } else if (categories?.length) {
+    setActiveCategoryId(categories[0].id.toString());
+  }
+}, [categoryFromUrl, categories]);
 
 
   const openModal = (item: Product) => {
@@ -64,12 +79,12 @@ const [isModalOpen, setIsModalOpen] = useState(false);
   };
 
   const activeItems = useMemo(() => {
-    if (!products || !activeTabId) return [];
+    if (!products || !activeCategoryId) return [];
 
     return products.filter(
-      (item) => item.category_id.toString() === activeTabId
+      (item) => item.category_id.toString() === activeCategoryId
     );
-  }, [products, activeTabId]);
+  }, [products, activeCategoryId]);
 
   const isLoading = loading;
 
@@ -80,6 +95,7 @@ const [isModalOpen, setIsModalOpen] = useState(false);
       </div>
     );
   }
+
 
 
   return (
@@ -99,11 +115,12 @@ const [isModalOpen, setIsModalOpen] = useState(false);
                   <li
                     key={item.id}
                     className="flex justify-center items-center gap-2 uppercase font-semibold text-[#3E445A] text-xl  px-3 py-2 md:py-3 cursor-pointer"
-                     onClick={() => router.push(`/menu/${item.id}`)}
+                     onClick={() => setActiveCategoryId(item.id.toString())}
+
                   >
                     <div
                       className={`${
-                        activeTabId === item.id.toString()
+                        activeCategoryId === item.id.toString()
                           ? "text-(--bg-color) "
                           : ""
                       }`}
