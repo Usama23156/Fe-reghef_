@@ -1,29 +1,36 @@
-"use client";
+"use client"; 
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import useTranslation from "@/hooks/useTranslation";
 
 export default function OrderConfirmation() {
-    const { t } = useTranslation();
-    const params = useSearchParams();
-    const order = params.get("orderNumber") || "غير محدد";
+  const { t, lang } = useTranslation();
+  const params = useSearchParams();
+  const router = useRouter();
 
-    // Alternatively, you can log missing parameters
-    if (!params.get("orderNumber")) {
-        console.warn("No order number found in parameters.");
-    }
+  // رقم الطلب من الـ URL
+  const orderNumber = params.get("orderNumber") || "غير محدد";
 
-    return (
-        <div className="flex items-center justify-center min-h-screen text-center">
-            <div>
-                <h1 className="text-2xl font-bold mb-4">
-                    {t.orderDone}
-                </h1>
-                <p className="text-lg">
-                    {t.time}
-                </p>
-                <p>{t.orderNum}: {order}</p>
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex items-center justify-center min-h-screen px-4 bg-(--bg-color)">
+      <div className="bg-white p-8 rounded-xl shadow-md text-center max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-4 textr(--text-color)">
+          {t.orderDone}
+        </h1>
+        <p className="text-lg mb-2 text-(--text-color)">
+          {t.time}
+        </p>
+        <p className="text-(--text-color) mb-6">
+          {t.orderNum}: {orderNumber}
+        </p>
+
+        <button
+          onClick={() => router.push("/")}
+          className="px-6 py-2 bg-(--main-color) text-white rounded-lg hover:bg-red-700 transition"
+        >
+          {lang === "ar" ? "العودة للصفحة الرئيسية" : "Back to Home"}
+        </button>
+      </div>
+    </div>
+  );
 }
