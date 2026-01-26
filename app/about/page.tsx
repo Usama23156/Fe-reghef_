@@ -2,7 +2,7 @@
 import React from "react";
 import useTranslation from "@/hooks/useTranslation";
 
-const page = () => {
+const Page = () => {
    const { t } = useTranslation();
   return (
     <div>
@@ -70,4 +70,4 @@ const page = () => {
     </div>
   );
 };
-export default page;
+export default Page;
