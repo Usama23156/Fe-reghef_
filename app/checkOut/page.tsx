@@ -8,6 +8,7 @@ import type { CartItem } from "@/store/cartSlice";
 import type { RootState, AppDispatch } from "@/store/store";
 import { generateOrderNumber } from "@/lib/generateOrderNumber";
 import useTranslation from "@/hooks/useTranslation";
+import Loading from "@/_component/loading/page";
 
 type DeliveryType = "pickup" | "delivery";
 
@@ -21,7 +22,7 @@ export default function CheckoutPage() {
   );
 
 
-
+const [loading, setLoading] = useState(false);
 
   // Hydration-safe cart state
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
@@ -116,6 +117,9 @@ const handleConfirmOrder = async () => {
   }
 
   try {
+
+    setLoading(true);
+
     const res = await fetch("/api/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -272,7 +276,7 @@ const handleConfirmOrder = async () => {
   }
         className="w-full bg-(--bg-color) text-white py-3 rounded-xl font-semibold disabled:opacity-50 cursor-pointer"
       >
-       {t.confirmOrder}
+      {loading ? <Loading height={30} width={30} color="#FFFFFF" /> : t.confirmOrder}
       </button>
     </div>
   );

@@ -145,7 +145,7 @@ const firstCategoryId = categories?.[0]?.id;
               <h6 onClick={() =>
         dispatch(setLanguage(lang === "ar" ? "en" : "ar"))
       }
-              className={` md:text-(--bg-color) text-(--bg-color) cursor-pointer ${
+              className={` md:text-(--bg-color) text-(--bg-color) cursor-pointer select-none ${
                     scrollPosition > 50
                       ? "text-(--main-color) md:text-(--main-color) hover:text-(--text-color)"
                       : "md:text-(--bg-color) hover:md:text-(--text-color) hover:text-(--text-color)"
