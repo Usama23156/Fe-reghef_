@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState} from "@/store/store";
 import { setLanguage } from "@/store/languageSlice";
 import useTranslation from "@/hooks/useTranslation";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const page = () => {
 
@@ -22,6 +24,21 @@ const page = () => {
 
   const categories = useSelector((state: RootState) => state.categories.data);
 const firstCategoryId = categories?.[0]?.id;
+
+const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    // تهيئة AOS
+    AOS.init({ once: true });
+
+    // التحقق إذا أول مرة يفتح الموقع
+    const hasVisited = sessionStorage.getItem("visited");
+    if (!hasVisited) {
+      setAnimate(true);
+      sessionStorage.setItem("visited", "true");
+    }
+  }, []);
+
 
   useEffect(() => {
     const handelScroll = () => {
@@ -47,12 +64,14 @@ const firstCategoryId = categories?.[0]?.id;
           }`}
         >
           <Link
-            href="/"
-            data-aos="flip-right"
-            className={`text-[1.1rem] font-semibold  flex items-center gap-x-2 ${
-              scrollPosition > 50 ? "text-(--text-color)" : "text-(--bg-color)"
-            }`}
-          >
+      href="/"
+      data-aos={animate ? "flip-right" : undefined}
+      data-aos-delay={animate ? "100" : undefined}
+      data-aos-duration={animate ? "1000" : undefined}
+      className={`text-[1.1rem] font-semibold flex items-center gap-x-2 ${
+        scrollPosition > 50 ? "text-(--text-color)" : "text-(--bg-color)"
+      }`}
+    >
             <img src="/logo.jpg" alt="" className=" max-w-25 rounded-xl " />
           </Link>
           <div
