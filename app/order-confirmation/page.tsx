@@ -1,6 +1,39 @@
-import React from "react";
-import ClientOrderConfirmation from "@/_component/ClientOrderConfirmation/page";
+"use client";
 
-export default function Page() {
-  return <ClientOrderConfirmation />;
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import useTranslation from "@/hooks/useTranslation";
+
+export default function OrderConfirmation() {
+  const { t, lang } = useTranslation();
+  const params = useSearchParams();
+  const [orderNumber, setOrderNumber] = useState<string>("غير محدد");
+
+  // Safely get order number after client hydration
+  useEffect(() => {
+    const order = params.get("orderNumber");
+    if (order) setOrderNumber(order);
+  }, [params]);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen px-4">
+      <div className="border border-(--bg-color) p-8 rounded-xl shadow-md text-center max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-4 text-(--text-color)">
+          {t.orderDone}
+        </h1>
+        <p className="text-lg mb-2 text-(--text-color)">{t.time}</p>
+        <p className="text-(--text-color)">
+          {t.orderNum}: {orderNumber}
+        </p>
+
+        {/* زر الرجوع للصفحة الرئيسية */}
+        <button
+          onClick={() => (window.location.href = "/")}
+          className="mt-6 px-6 py-2 bg-(--bg-color) text-white rounded-lg hover:bg-red-800 transition cursor-pointer"
+        >
+          {lang === "ar" ? "العودة للصفحة الرئيسية" : "Back to Home"}
+        </button>
+      </div>
+    </div>
+  );
 }

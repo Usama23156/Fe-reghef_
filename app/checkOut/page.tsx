@@ -157,9 +157,9 @@ const handleConfirmOrder = async () => {
         <div className="flex gap-4">
           <button
             onClick={() => setDeliveryType("pickup")}
-            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
+            className={`px-4 py-2 rounded-xl border border-(--bg-color) cursor-pointer ${
               deliveryType === "pickup"
-                ? "bg-(--bg-color) text-white cursor-pointer"
+                ? "bg-(--bg-color) text-white"
                 : "text-(--text-color)"
             }`}
           >
@@ -167,9 +167,9 @@ const handleConfirmOrder = async () => {
           </button>
           <button
             onClick={() => setDeliveryType("delivery")}
-            className={`px-4 py-2 rounded-xl border border-(--bg-color) ${
+            className={`px-4 py-2 rounded-xl border border-(--bg-color) cursor-pointer ${
               deliveryType === "delivery"
-                ? "bg-(--bg-color) text-white cursor-pointer"
+                ? "bg-(--bg-color) text-white"
                 : "text-(--text-color)"
             }`}
           >
