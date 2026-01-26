@@ -116,7 +116,7 @@ const categoryFromUrl = searchParams.get("category");
                       className={`${
                         activeCategoryId === item.id.toString()
                           ? "text-(--bg-color) "
-                          : ""
+                          : "text-(--text-color) hover:text-(--bg-color)"
                       }`}
                     >
                       {/* {item.name_ar} */}
